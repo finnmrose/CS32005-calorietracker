@@ -12,7 +12,7 @@ import SwiftUI
 /* Generic food class that meals and ingredients build upon */
 
 @Model
-class Food : Identifiable, Codable {
+class Food : Identifiable, Codable, Hashable {
     enum CodingKeys: CodingKey {
         case id, name, calories, nutritional_info, ingredients, timestamp
     }

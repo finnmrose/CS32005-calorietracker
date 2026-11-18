@@ -16,7 +16,7 @@ struct NewFoodView : View {
     @State private var name: String = ""
     @State private var nutritional_info: [Food.Nutrient: Float] = [:]
     
-    @State private var ingredients: [FoodInstance] = []
+    @State private var ingredients: [Food: Float] = [:]
     @State private var showSheet: Bool = false
     
     init() {
@@ -38,11 +38,6 @@ struct NewFoodView : View {
             Section(header: Text("Nutritional Information per 100g")) {
                 ForEach(Food.Nutrient.allCases) { nutrient in
                     FloatField(label: nutrient.long_name, value: $nutritional_info[nutrient], required: nutrient.required)
-                        .onChange(of: ingredients) {
-                            for key in nutritional_info.keys {
-                                nutritional_info[key] = ingredients.reduce(0, {$0 + ($1.nutritional_info[key] ?? 0)})
-                            }
-                        }
                 }
             }
             
@@ -50,9 +45,13 @@ struct NewFoodView : View {
                 Button("Add Ingredient", systemImage: "plus") {
                     showSheet.toggle()
                 }.foregroundStyle(.link)
-                List ($ingredients, editActions: .delete) { $food in
-                    Text(food.name)
+                
+                List {
+                    ForEach(Array(ingredients.keys)) { food in
+                        Text("\(ingredients[food]!.formatted(.number.notation(.compactName)))g \(food.name)")
+                    }.onDelete(perform: delete)
                 }
+                
             }.navigationLinkIndicatorVisibility(.hidden)
         }
         .navigationTitle(Text("Create new food"))
@@ -61,6 +60,7 @@ struct NewFoodView : View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
                     context.insert(Food(name: name, nutritional_info: nutritional_info))
+                    try? context.save()
                     dismiss()
                 }.disabled(name == "" || required_values_not_filled())
             }
@@ -83,7 +83,25 @@ struct NewFoodView : View {
     }
     
     func add_ingredients() {
+        nutritional_info = [:]
         
+        for i in ingredients.keys {
+            for n in i.nutritional_info.keys {
+                nutritional_info[n, default: 0] += (i[n] ?? 0) * (ingredients[i]! / 100)
+            }
+        }
+    }
+    
+    func delete(at offsets: IndexSet) {
+        if let ndx = offsets.first {
+            let item = ingredients.keys.sorted(by: {$0.timestamp > $1.timestamp})[ndx]
+            
+            for n in item.nutritional_info.keys {
+                nutritional_info[n]! -= item.nutritional_info[n]! * (ingredients[item]! / 100)
+            }
+            
+            ingredients.removeValue(forKey: item)
+        }
     }
 }
 

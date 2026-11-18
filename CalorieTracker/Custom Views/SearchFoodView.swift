@@ -9,12 +9,13 @@ import SwiftUI
 import SwiftData
 
 struct SearchFoodView: View {
+    
     @Query private var foods: [Food]
     
     @State private var searchResults: [Food] = []
     @State private var searchQuery: String = ""
     
-    @Binding var ingredients: [FoodInstance]
+    @Binding var ingredients: [Food: Float]
     
     var isSearching: Bool {
         return !searchQuery.isEmpty
@@ -23,7 +24,7 @@ struct SearchFoodView: View {
     var body: some View {
         List {
             ForEach(isSearching ? searchResults.sorted {$0.timestamp > $1.timestamp} : foods.sorted {$0.timestamp > $1.timestamp}) { food in
-                SearchResult(food: food)
+                SearchResult(food: food, ingredients: $ingredients)
             }
         }
         .searchable(
@@ -46,9 +47,14 @@ struct SearchFoodView: View {
 }
 
 struct SearchResult: View {
-    @Environment(\.dismiss) private var dismiss
     @State var amount: Float? = nil
     let food: Food
+    @Binding var ingredients: [Food: Float]
+    
+    init(food: Food, ingredients: Binding<[Food: Float]>) {
+        self.food = food
+        self._ingredients = ingredients
+    }
     
     var body: some View {
         HStack {
@@ -63,6 +69,14 @@ struct SearchResult: View {
             } onDecrement: {
                 amount = (amount ?? 0 <= 100) ? nil : amount! - 100
             }.multilineTextAlignment(.trailing)
+        }.onChange(of: amount) {
+            if amount ?? 0 > 0 {
+                ingredients[food] = amount
+            } else {
+                ingredients.removeValue(forKey: food)
+            }
+        }.task {
+            self.amount = ingredients[food]
         }
     }
 }
