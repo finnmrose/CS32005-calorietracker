@@ -63,7 +63,7 @@ struct GoalWheel: View {
     let color: Color
     
     var body : some View {
-        var progress = value / goal
+        let progress = value / goal
         
         VStack {
             label
