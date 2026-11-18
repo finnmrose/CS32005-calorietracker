@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-struct FoodInstance: Identifiable, Codable, Equatable {
+struct FoodInstance: Identifiable, Codable, Equatable, CustomStringConvertible {
     
     var id: UUID = UUID()
     let food: Food
@@ -20,6 +20,9 @@ struct FoodInstance: Identifiable, Codable, Equatable {
     }
     var name: String { return food.name }
     var calories: Float { return food.calories * amount }
+    var description: String {
+        return "(\(self.amount.formatted(.number.notation(.compactName)))) \"\(self.name)\""
+    }
     
     init(_ food: Food, amount: Float) {
         self.food = food

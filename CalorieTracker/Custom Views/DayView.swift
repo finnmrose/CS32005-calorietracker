@@ -28,7 +28,7 @@ struct DayView : View {
                     MealView(meal, day.date, path: $path)
                 }
             }
-        }.frame(height: .infinity)
+        }
     }
 }
 

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct LogFoodView : View {
     
@@ -15,6 +16,7 @@ struct LogFoodView : View {
     @State private var date: Date
     @State private var meal: String?
     
+    @Environment(DataContainer.self) private var dataContainer: DataContainer
     @Environment(Log.self) private var log: Log
     @Environment(\.dismiss) private var dismiss
     
@@ -59,8 +61,13 @@ struct LogFoodView : View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", systemImage: "checkmark") {
+                    
                     log[date][meal!]?.foods.append(FoodInstance(food, amount: weight ?? 0))
                     food.timestamp = .now
+                    
+                    try? dataContainer.context.save()
+                    print(log)
+                    
                     dismiss()
                 }.disabled(weight == nil || meal == nil)
             }

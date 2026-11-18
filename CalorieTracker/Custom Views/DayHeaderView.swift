@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DayHeaderView : View {
     @Binding var day : Day

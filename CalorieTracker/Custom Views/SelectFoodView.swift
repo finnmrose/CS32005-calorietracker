@@ -13,7 +13,6 @@ import SwiftData
 
 struct SelectFoodView: View {
     @Query(sort: \Food.timestamp, order:.reverse) private var foods: [Food]
-    @Environment(\.modelContext) private var context
     
     @State private var newFood: Food?
     @Binding var path: NavigationPath

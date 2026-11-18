@@ -11,9 +11,12 @@
 import Foundation
 import SwiftData
 
-@Observable
-class Log {
+@Model
+class Log: CustomStringConvertible {
     var data: [Date: Day]
+    var description: String {
+        return self.data.values.description
+    }
     
     init(_ data: [Date: Day] = [:]) {
         self.data = data

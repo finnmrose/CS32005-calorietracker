@@ -122,6 +122,6 @@ struct FloatField : View {
 #Preview {
     NavigationStack {
         NewFoodView()
-            .modelContainer(SampleData.shared.modelContainer)
+            .sampleDataContainer()
     }
 }

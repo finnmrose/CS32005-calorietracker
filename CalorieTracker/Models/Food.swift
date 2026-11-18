@@ -12,7 +12,7 @@ import SwiftUI
 /* Generic food class that meals and ingredients build upon */
 
 @Model
-class Food : Identifiable, Codable, Hashable {
+class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     enum CodingKeys: CodingKey {
         case id, name, calories, nutritional_info, ingredients, timestamp
     }
@@ -76,6 +76,10 @@ class Food : Identifiable, Codable, Hashable {
     var ingredients: [FoodInstance]
     
     var timestamp: Date
+    
+    var description: String {
+        return self.name
+    }
     
     init(name: String, calories: Float = 0, carbs: Float = 0, protein: Float = 0, fats: Float = 0) {
         self.name = name

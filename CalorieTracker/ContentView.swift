@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(Log.self) private var log: Log
+    @Environment(Log.self) private var log
     
     var body: some View {
         DayView(log[.now])
@@ -18,12 +18,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(SampleData.shared.modelContainer)
-        .environment(Log.sampleData)
-}
-
-#Preview("No Data") {
-    ContentView()
-        .modelContainer(for: Food.self, inMemory: true)
-        .environment(Log())
+        .sampleDataContainer()
+    
 }
