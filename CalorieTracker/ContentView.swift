@@ -6,19 +6,24 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Environment(Log.self) private var log: Log
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        DayView(log[.now])
     }
 }
 
 #Preview {
     ContentView()
+        .modelContainer(SampleData.shared.modelContainer)
+        .environment(Log.sampleData)
+}
+
+#Preview("No Data") {
+    ContentView()
+        .modelContainer(for: Food.self, inMemory: true)
+        .environment(Log())
 }
