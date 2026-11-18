@@ -76,6 +76,7 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     var ingredients: [FoodInstance]
     
     var timestamp: Date
+    var deleted: Bool = false
     
     var description: String {
         return self.name

@@ -40,7 +40,7 @@ struct SelectFoodView: View {
                 
                 Section(header: Text("Saved Foods")) {
                     List {
-                        ForEach(foods) { food in
+                        ForEach(foods.filter({!$0.deleted})) { food in
                             NavigationLink {
                                 LogFoodView(food, date: self.date ?? .now, meal: self.meal, path: $path)
                             } label: {
@@ -50,10 +50,18 @@ struct SelectFoodView: View {
                                     Text(food.calories.formatted(.number.notation(.compactName)))
                                 }
                             }
-                        }
+                        }.onDelete(perform: delete)
                     }
                 }
             }.navigationTitle(Text("Select Food"))
+        }
+    }
+    
+    func delete(at offsets: IndexSet) {
+        for index in offsets {
+            // foods don't actually get deleted just hidden from the saved foods list
+            // since some food instances could refer to them
+            foods[index].deleted = true
         }
     }
 }
