@@ -13,6 +13,9 @@ import SwiftData
 
 @Model
 class Log: CustomStringConvertible {
+    
+    private var c: Bool = false
+    
     var data: [Date: Day]
     var description: String {
         return self.data.values.description
@@ -37,14 +40,11 @@ class Log: CustomStringConvertible {
         }
     }
     
-    func get_default(index: Date) -> Day {
-        if let d = data[index] {
-            return d
-        } else {
-            let d = Day(index)
-            data[index] = d
-            return d
-        }
+    // this function just does a something to Log so it properly gets saved via SwiftData
+    // otherwise when things only modify objects inside Log (and not Log itself)
+    // SwiftData fails to detect something has changed and doesn't save the data
+    func commit() {
+        c.toggle()
     }
     
     static let sampleData = Log([.now: Day.sampleData.first!])

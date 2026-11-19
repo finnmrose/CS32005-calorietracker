@@ -63,6 +63,7 @@ struct LogFoodView : View {
                     log[date][meal]?.foods.append(FoodInstance(food, amount: portion_size ?? 0))
                     food.timestamp = .now
                     
+                    log.commit()
                     try? context.save()
                     
                     dismiss()

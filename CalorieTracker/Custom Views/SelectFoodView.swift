@@ -12,19 +12,22 @@ import SwiftUI
 import SwiftData
 
 struct SelectFoodView: View {
-    @Query(sort: \Food.timestamp, order:.reverse) private var foods: [Food]    
+    @Query(sort: \Food.timestamp, order:.reverse) private var foods: [Food]
+    @Environment(\.modelContext) private var context
+    @Environment(Log.self) private var log
+    
     @State private var searchQuery: String = ""
     var isSearching: Bool { return !searchQuery.isEmpty }
     
     var results: [Food] {
-        guard isSearching else {return foods.filter{!$0.deleted}}
+        guard isSearching else {return foods.filter{!$0.deleted}.sorted(by: {$0.timestamp > $1.timestamp})}
         return foods.filter { food in
             food.name
                 .lowercased()
                 .contains(searchQuery.lowercased())
             &&
             !food.deleted
-        }
+        }.sorted(by: {$0.timestamp > $1.timestamp})
     }
     
     let meal: String
@@ -74,7 +77,10 @@ struct SelectFoodView: View {
         for index in offsets {
             // foods don't actually get deleted just hidden from the saved foods list
             // since some food instances could refer to them
-            foods[index].deleted = true
+            results[index].deleted = true
         }
+        
+        log.commit()
+        try? context.save()
     }
 }

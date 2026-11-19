@@ -6,11 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 
 
 struct MealView : View {
     
-    let meal: Meal
+    @Environment(\.modelContext) private var context
+    @Environment(Log.self) private var log
+    
+    @State var meal: Meal
     let date: Date
     
     init(_ meal: Meal, _ date: Date) {
@@ -40,6 +44,8 @@ struct MealView : View {
     
     func delete(at offsets: IndexSet) {
         meal.foods.remove(atOffsets: offsets)
+        log.commit()
+        try? context.save()
     }
 }
 
