@@ -85,8 +85,8 @@ struct GoalWheel: View {
             }
             
             Divider().hidden()
-            Text(value.formatted(.number.precision(.fractionLength(0...1)).precision(.significantDigits(1...3))))
-            Text(goal.formatted(.number.precision(.fractionLength(0...1)).precision(.significantDigits(1...3))))
+            Text(value.formatted(UTILS.SHORT_FORMAT))
+            Text(goal.formatted(UTILS.SHORT_FORMAT))
         }
     }
     

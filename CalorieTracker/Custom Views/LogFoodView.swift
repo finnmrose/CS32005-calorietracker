@@ -35,7 +35,7 @@ struct LogFoodView : View {
                 }
             }
             HStack {
-                Text(food.portion_type.isContinuous ? "Portion Size (\(food.portion_type.unit))" : "Amount")
+                Text(food.portion_type.isContinuous ? "Portion Size (\(food.portion_type.unit))" : "No. of Servings")
                 Spacer()
                 TextField("Required", value: $portion_size, format: .number)
                     .multilineTextAlignment(.trailing)

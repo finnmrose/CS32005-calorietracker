@@ -73,7 +73,6 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     var calories: Float {nutritional_info[.calories] ?? 0}
     
     var nutritional_info: [Food.Nutrient: Float]
-    var ingredients: [FoodInstance]
     
     var timestamp: Date
     var deleted: Bool = false
@@ -97,7 +96,6 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         self.name = name
         self.portion_type = portion_type
         self.nutritional_info = [.calories:calories, .carbohydrates:carbs, .protein:protein, .fats:fats]
-        self.ingredients = []
         self.timestamp = .now
     }
     
@@ -105,22 +103,7 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         self.name = name
         self.portion_type = portion_type
         self.nutritional_info = nutritional_info
-        self.ingredients = []
         self.timestamp = .now
-    }
-    
-    init(name: String, ingredients: [FoodInstance]) {
-        self.name = name
-        self.portion_type = .count
-        self.nutritional_info = [:]
-        self.ingredients = ingredients
-        self.timestamp = .now
-        
-        for food in ingredients {
-            for k in food.nutritional_info.keys {
-                self.nutritional_info[k] = self.nutritional_info[k] ?? 0 + food.nutritional_info[k]!
-            }
-        }
     }
     
     subscript(index: Food.Nutrient) -> Float? {
@@ -133,8 +116,8 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     }
     
     static let sampleData = [
-        Food(name: "Banana", portion_type: .count, calories:89, carbs:22.8, protein:1.1, fats:0.33),
-        Food(name: "Apple", portion_type: .count, calories:52, carbs:13.8, protein:0.26, fats:0.17),
+        Food(name: "Banana", portion_type: .count, calories:105, carbs:27, protein:1.3, fats:0.39),
+        Food(name: "Apple", portion_type: .count, calories:95, carbs:25.1, protein:0.47, fats:0.31),
         Food(name: "Porridge", portion_type: .weight, calories: 0.71, carbs:0.12, protein:0.025, fats:0.015),
         Food(name: "Whole Milk", portion_type: .volume, calories: 0.63, carbs: 0.049, protein: 0.032, fats: 0.034),
     ]
@@ -145,7 +128,6 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         self.name = try container.decode(String.self, forKey: .name)
         self.portion_type = try container.decode(Portion.self, forKey: .portion)
         self.nutritional_info = try container.decode(Dictionary<Food.Nutrient, Float>.self, forKey: .nutritional_info)
-        self.ingredients = try container.decode(Array<FoodInstance>.self, forKey: .ingredients)
         self.timestamp = try container.decode(Date.self, forKey: .timestamp)
     }
     
@@ -155,7 +137,6 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         try container.encode(name, forKey: .name)
         try container.encode(portion_type, forKey: .portion)
         try container.encode(nutritional_info, forKey: .nutritional_info)
-        try container.encode(ingredients, forKey: .ingredients)
         try container.encode(timestamp, forKey: .timestamp)
     }
 }

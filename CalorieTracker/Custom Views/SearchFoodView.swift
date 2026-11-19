@@ -56,6 +56,7 @@ struct SearchResult: View {
     @State var amount: Float? = nil
     let food: Food
     @Binding var ingredients: [Food: Float]
+    var step_size: Float { return food.portion_type.input_scale}
     
     init(food: Food, ingredients: Binding<[Food: Float]>) {
         self.food = food
@@ -64,16 +65,16 @@ struct SearchResult: View {
     
     var body: some View {
         HStack {
-            Text(food.name)
+            Text(food.name + (food.portion_type.isContinuous ? " (\(food.portion_type.unit))" : ""))
             Spacer()
             Stepper {
                 TextField(value: $amount, format: .number) {
                     Text("\((amount ?? 0).formatted(.number))")
                 }
             } onIncrement: {
-                amount = (amount ?? 0) + 100
+                amount = (amount ?? 0) + step_size
             } onDecrement: {
-                amount = (amount ?? 0 <= 100) ? nil : amount! - 100
+                amount = (amount ?? 0 <= step_size) ? nil : amount! - step_size
             }.multilineTextAlignment(.trailing)
         }.onChange(of: amount) {
             if amount ?? 0 > 0 {

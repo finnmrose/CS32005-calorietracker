@@ -22,12 +22,6 @@ struct NewFoodView : View {
     @State private var p_type: Portion = .none
     @State private var p_size: Float? = nil
     
-    init() {
-        for n in Food.Nutrient.allCases {
-            self.nutritional_info[n] = nil
-        }
-    }
-    
     var body : some View {
         Form {
             HStack {
@@ -49,30 +43,29 @@ struct NewFoodView : View {
                         FloatField(label: nutrient.long_name, value: $nutritional_info[nutrient], required: nutrient.required)
                     }
                 }
-                
-                Section(header: Text("Ingredients")) {
-                    Button("Add Ingredient", systemImage: "plus") {
-                        showSheet.toggle()
-                    }.foregroundStyle(.link)
-                    
-                    List {
-                        ForEach(Array(ingredients.keys)) { food in
-                            Text("\(ingredients[food]!.formatted(.number.notation(.compactName)))g \(food.name)")
-                        }.onDelete(perform: delete)
-                    }
-                    
-                }.navigationLinkIndicatorVisibility(.hidden)
             }
-            
+            Section(header: Text("Ingredients")) {
+                Button("Add Ingredient", systemImage: "plus") {
+                    showSheet.toggle()
+                }.foregroundStyle(.link)
+                
+                List {
+                    ForEach(Array(ingredients.keys)) { food in
+                        HStack {
+                            Text(FoodInstance.format_amount(food, amount: ingredients[food]!))
+                            Text(food.name)
+                        }
+                    }.onDelete(perform: delete)
+                }
+                
+            }.navigationLinkIndicatorVisibility(.hidden)
         }
         .navigationTitle(Text("Create new food"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    print(Food(name: name, portion_type: p_type, nutritional_info: nutritional_info.mapValues({$0 * p_type.input_scale})).verbose)
-                    
-                    context.insert(Food(name: name, portion_type: p_type, nutritional_info: nutritional_info.mapValues({$0 * p_type.input_scale})))
+                    context.insert(Food(name: name, portion_type: p_type, nutritional_info: nutritional_info.mapValues({$0 / p_type.input_scale})))
                     try? context.save()
                     dismiss()
                 }.disabled(name.isEmpty || p_type.isNone || required_values_not_filled())
@@ -98,13 +91,14 @@ struct NewFoodView : View {
     func update_ingredients() {
         if !ingredients.isEmpty {
             p_type = .count
+            name = name.isEmpty ? "New Food" : name
         }
         
         nutritional_info = [:]
         
         for i in ingredients.keys {
             for n in i.nutritional_info.keys {
-                nutritional_info[n, default: 0] += (i[n] ?? 0) * (ingredients[i]! / 100)
+                nutritional_info[n, default: 0] += (i[n] ?? 0) * ingredients[i]!
             }
         }
     }
@@ -112,12 +106,8 @@ struct NewFoodView : View {
     func delete(at offsets: IndexSet) {
         if let ndx = offsets.first {
             let item = ingredients.keys.sorted(by: {$0.timestamp > $1.timestamp})[ndx]
-            
-            for n in item.nutritional_info.keys {
-                nutritional_info[n]! -= item.nutritional_info[n]! * (ingredients[item]! / 100)
-            }
-            
             ingredients.removeValue(forKey: item)
+            update_ingredients()
         }
     }
 }

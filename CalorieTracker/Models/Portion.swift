@@ -42,7 +42,7 @@ enum Portion: CaseIterable, Identifiable, CustomStringConvertible, Codable {
     var alt_unit: String {
         switch self {
         case .count:
-            return "portion"
+            return "serving"
         case .weight:
             return "100g"
         case .volume:
@@ -75,7 +75,7 @@ enum Portion: CaseIterable, Identifiable, CustomStringConvertible, Codable {
     var input_scale: Float {
         switch self {
         case .weight, .volume:
-            return 0.01
+            return 100
         case .count:
             return 1
         default:

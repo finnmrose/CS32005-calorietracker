@@ -36,6 +36,17 @@ struct FoodInstance: Identifiable, Codable, Equatable, CustomStringConvertible {
         }
     }
     
+    static func format_amount(_ food: Food, amount: Float) -> String {
+        switch food.portion_type {
+        case .weight, .volume:
+            return (amount > 1000) ? "\((amount / 1000).formatted(UTILS.SHORT_FORMAT))\(food.portion_type.big_unit)" : "\(amount.formatted(UTILS.SHORT_FORMAT))\(food.portion_type.unit)"
+        case .count:
+            return amount.formatted(.number.notation(.compactName))
+        default:
+            return ""
+        }
+    }
+    
     init(_ food: Food, amount: Float) {
         self.food = food
         self.amount = amount
@@ -56,9 +67,6 @@ struct FoodInstance: Identifiable, Codable, Equatable, CustomStringConvertible {
         FoodInstance(Food.sampleData[0], 0.5),
         FoodInstance(Food.sampleData[1], 1),
         FoodInstance(Food.sampleData[2], 100),
-        FoodInstance(Food.sampleData[2], 1100),
-        FoodInstance(Food.sampleData[2], 0.001),
         FoodInstance(Food.sampleData[3], 200),
-        FoodInstance(Food.sampleData[3], 25200),
     ]
 }

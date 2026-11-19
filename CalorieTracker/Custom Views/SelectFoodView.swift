@@ -60,13 +60,13 @@ struct SelectFoodView: View {
                                 HStack {
                                     Text(food.name)
                                     Spacer()
-                                    Text(food.calories.formatted(.number.notation(.compactName)) + (food.portion_type.isContinuous ? " / \(food.portion_type.unit)": ""))
+                                    Text((food.calories * food.portion_type.input_scale).formatted(.number.notation(.compactName)) + "kcal / " + food.portion_type.alt_unit)
                                 }
                             }
                         }.onDelete(perform: delete)
                     }
                 }
-            }.navigationTitle(Text("Select Food"))
+            }.navigationTitle(Text("Log Food"))
         }
     }
     
