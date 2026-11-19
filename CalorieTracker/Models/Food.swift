@@ -14,7 +14,7 @@ import SwiftUI
 @Model
 class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     enum CodingKeys: CodingKey {
-        case id, name, calories, nutritional_info, ingredients, timestamp
+        case id, name, portion, calories, nutritional_info, ingredients, timestamp
     }
     
     enum Nutrient : Int, CaseIterable, Codable, Identifiable {
@@ -78,19 +78,32 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     var timestamp: Date
     var deleted: Bool = false
     
+    var portion_type: Portion
+    
     var description: String {
         return self.name
     }
     
-    init(name: String, calories: Float = 0, carbs: Float = 0, protein: Float = 0, fats: Float = 0) {
+    var verbose: String {
+        var output = "\"\(self.name)\":\n"
+        for key in nutritional_info.keys.sorted(by: {$0.rawValue < $1.rawValue}) {
+            output += "\t\(key.short_name): \(nutritional_info[key]!) / \(self.portion_type.unit)\n"
+        }
+        
+        return output
+    }
+    
+    init(name: String, portion_type: Portion, calories: Float = 0, carbs: Float = 0, protein: Float = 0, fats: Float = 0) {
         self.name = name
+        self.portion_type = portion_type
         self.nutritional_info = [.calories:calories, .carbohydrates:carbs, .protein:protein, .fats:fats]
         self.ingredients = []
         self.timestamp = .now
     }
     
-    init(name: String, nutritional_info: [Food.Nutrient: Float] = [:]) {
+    init(name: String, portion_type: Portion, nutritional_info: [Food.Nutrient: Float] = [:]) {
         self.name = name
+        self.portion_type = portion_type
         self.nutritional_info = nutritional_info
         self.ingredients = []
         self.timestamp = .now
@@ -98,6 +111,7 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     
     init(name: String, ingredients: [FoodInstance]) {
         self.name = name
+        self.portion_type = .count
         self.nutritional_info = [:]
         self.ingredients = ingredients
         self.timestamp = .now
@@ -119,17 +133,17 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     }
     
     static let sampleData = [
-        Food(name: "Banana", calories:89, carbs:22.8, protein:1.1, fats:0.33),
-        Food(name: "Apple", calories:52, carbs:13.8, protein:0.26, fats:0.17),
-        Food(name: "Porridge", calories: 71, carbs:12, protein:2.5, fats:1.5),
-        Food(name: "One Big Calorie", calories: 1),
-        Food(name: "Protein Cube", protein: 100)
+        Food(name: "Banana", portion_type: .count, calories:89, carbs:22.8, protein:1.1, fats:0.33),
+        Food(name: "Apple", portion_type: .count, calories:52, carbs:13.8, protein:0.26, fats:0.17),
+        Food(name: "Porridge", portion_type: .weight, calories: 0.71, carbs:0.12, protein:0.025, fats:0.015),
+        Food(name: "Whole Milk", portion_type: .volume, calories: 0.63, carbs: 0.049, protein: 0.032, fats: 0.034),
     ]
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(UUID.self, forKey: .id)
         self.name = try container.decode(String.self, forKey: .name)
+        self.portion_type = try container.decode(Portion.self, forKey: .portion)
         self.nutritional_info = try container.decode(Dictionary<Food.Nutrient, Float>.self, forKey: .nutritional_info)
         self.ingredients = try container.decode(Array<FoodInstance>.self, forKey: .ingredients)
         self.timestamp = try container.decode(Date.self, forKey: .timestamp)
@@ -139,6 +153,7 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
+        try container.encode(portion_type, forKey: .portion)
         try container.encode(nutritional_info, forKey: .nutritional_info)
         try container.encode(ingredients, forKey: .ingredients)
         try container.encode(timestamp, forKey: .timestamp)

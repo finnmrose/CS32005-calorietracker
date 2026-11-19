@@ -17,7 +17,7 @@ struct LogFoodView : View {
     @State private var date: Date
     @State private var meal: String?
     
-    @Environment(DataContainer.self) private var dataContainer: DataContainer
+    @Environment(\.modelContext) private var context
     @Environment(Log.self) private var log: Log
     @Environment(\.dismiss) private var dismiss
     
@@ -41,6 +41,7 @@ struct LogFoodView : View {
                 Spacer()
                 TextField("Required", value: $weight, format: .number)
                     .multilineTextAlignment(.trailing)
+                    .keyboardType(.decimalPad)
             }
             
             Section(header: Text("Nutritional Information")) {
@@ -64,7 +65,7 @@ struct LogFoodView : View {
                     log[date][meal!]?.foods.append(FoodInstance(food, amount: weight ?? 0))
                     food.timestamp = .now
                     
-                    try? dataContainer.context.save()
+                    try? context.save()
                     
                     dismiss()
                     dismissParent()

@@ -19,6 +19,9 @@ struct NewFoodView : View {
     @State private var ingredients: [Food: Float] = [:]
     @State private var showSheet: Bool = false
     
+    @State private var p_type: Portion = .none
+    @State private var p_size: Float? = nil
+    
     init() {
         for n in Food.Nutrient.allCases {
             self.nutritional_info[n] = nil
@@ -27,45 +30,55 @@ struct NewFoodView : View {
     
     var body : some View {
         Form {
-            
             HStack {
                 Text("Name")
                 TextField("Required", text: $name)
                     .multilineTextAlignment(.trailing)
                     .autocorrectionDisabled()
-            }
-            
-            Section(header: Text("Nutritional Information per 100g")) {
-                ForEach(Food.Nutrient.allCases) { nutrient in
-                    FloatField(label: nutrient.long_name, value: $nutritional_info[nutrient], required: nutrient.required)
-                }
-            }
-            
-            Section(header: Text("Ingredients")) {
-                Button("Add Ingredient", systemImage: "plus") {
-                    showSheet.toggle()
-                }.foregroundStyle(.link)
                 
-                List {
-                    ForEach(Array(ingredients.keys)) { food in
-                        Text("\(ingredients[food]!.formatted(.number.notation(.compactName)))g \(food.name)")
-                    }.onDelete(perform: delete)
+            }
+            Picker("Portion Type", selection: $p_type.animation()) {
+                ForEach(Portion.allCases) { portion in
+                    Text(portion.description)
+                }
+            }.disabled(!ingredients.isEmpty)
+            
+            if !name.isEmpty, !p_type.isNone {
+                Section(header: Text("Nutritional Information per \(p_type.alt_unit)")) {
+                    ForEach(Food.Nutrient.allCases) { nutrient in
+                        FloatField(label: nutrient.long_name, value: $nutritional_info[nutrient], required: nutrient.required)
+                    }
                 }
                 
-            }.navigationLinkIndicatorVisibility(.hidden)
+                Section(header: Text("Ingredients")) {
+                    Button("Add Ingredient", systemImage: "plus") {
+                        showSheet.toggle()
+                    }.foregroundStyle(.link)
+                    
+                    List {
+                        ForEach(Array(ingredients.keys)) { food in
+                            Text("\(ingredients[food]!.formatted(.number.notation(.compactName)))g \(food.name)")
+                        }.onDelete(perform: delete)
+                    }
+                    
+                }.navigationLinkIndicatorVisibility(.hidden)
+            }
+            
         }
         .navigationTitle(Text("Create new food"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    context.insert(Food(name: name, nutritional_info: nutritional_info))
+                    print(Food(name: name, portion_type: p_type, nutritional_info: nutritional_info.mapValues({$0 * p_type.input_scale})).verbose)
+                    
+                    context.insert(Food(name: name, portion_type: p_type, nutritional_info: nutritional_info.mapValues({$0 * p_type.input_scale})))
                     try? context.save()
                     dismiss()
-                }.disabled(name == "" || required_values_not_filled())
+                }.disabled(name.isEmpty || p_type.isNone || required_values_not_filled())
             }
         }
-        .sheet(isPresented: $showSheet, onDismiss: add_ingredients) {
+        .sheet(isPresented: $showSheet, onDismiss: update_ingredients) {
             NavigationStack {
                 SearchFoodView(ingredients: $ingredients)
                     .presentationDragIndicator(.visible)
@@ -82,7 +95,11 @@ struct NewFoodView : View {
         return false
     }
     
-    func add_ingredients() {
+    func update_ingredients() {
+        if !ingredients.isEmpty {
+            p_type = .count
+        }
+        
         nutritional_info = [:]
         
         for i in ingredients.keys {
@@ -113,8 +130,9 @@ struct FloatField : View {
     var body : some View {
         HStack {
             Text(label)
-            TextField(required ? "Required" : "0", value: $value, format: .number)
+            TextField(required ? "Required" : "0", value: $value, format: .number.precision(.fractionLength(0...2)))
                 .multilineTextAlignment(.trailing)
+                .keyboardType(.decimalPad)
         }
     }
 }
