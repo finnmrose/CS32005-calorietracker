@@ -25,7 +25,7 @@ struct SelectFoodView: View {
                 .lowercased()
                 .contains(searchQuery.lowercased())
             &&
-            !food.isDeleted
+            !food.deleted
         }
     }
     

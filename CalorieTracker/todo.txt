@@ -3,6 +3,8 @@
 3. MAYBE DONE (add search to select food view)
 4. MAYBE DONE (fix navigation path)
 5. add portion generalizations
-6. add barcode api or health kit shit
-7. add camera if barcode is done
-8. add tags for searches with things like fruit, high protein, etc.
+6. add settings for things like default goals and meals and shit
+7. add edit buttons to everything
+8. add barcode api or health kit shit
+9. add camera if barcode is done
+10. add tags for searches with things like fruit, high protein, etc.
