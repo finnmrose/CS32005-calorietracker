@@ -17,13 +17,17 @@ struct SearchFoodView: View {
     
     @Binding var ingredients: [Food: Float]
     
+    var results: [Food] {
+        return isSearching ? searchResults.filter{!$0.deleted}.sorted{$0.timestamp > $1.timestamp} : foods.filter{!$0.deleted}.sorted{$0.timestamp > $1.timestamp}
+    }
+    
     var isSearching: Bool {
         return !searchQuery.isEmpty
     }
     
     var body: some View {
         List {
-            ForEach(isSearching ? searchResults.sorted {$0.timestamp > $1.timestamp} : foods.sorted {$0.timestamp > $1.timestamp}) { food in
+            ForEach(results) { food in
                 SearchResult(food: food, ingredients: $ingredients)
             }
         }
@@ -42,6 +46,8 @@ struct SearchFoodView: View {
             food.name
                 .lowercased()
                 .contains(searchQuery)
+            &&
+            !food.deleted
         }
     }
 }

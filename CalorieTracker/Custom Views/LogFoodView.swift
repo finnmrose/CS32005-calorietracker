@@ -11,6 +11,7 @@ import SwiftData
 struct LogFoodView : View {
     
     let food: Food
+    let dismissParent: DismissAction
     
     @State private var weight: Float? = nil
     @State private var date: Date
@@ -20,13 +21,11 @@ struct LogFoodView : View {
     @Environment(Log.self) private var log: Log
     @Environment(\.dismiss) private var dismiss
     
-    @Binding var path: NavigationPath
-    
-    init(_ food: Food, date: Date = Date(), meal: String? = nil, path: Binding<NavigationPath>) {
+    init(_ food: Food, date: Date = Date(), meal: String? = nil, dismissParent: DismissAction) {
         self.food = food
         self.date = date
         self.meal = meal
-        self._path = path
+        self.dismissParent = dismissParent
     }
     
     var body : some View {
@@ -66,9 +65,10 @@ struct LogFoodView : View {
                     food.timestamp = .now
                     
                     try? dataContainer.context.save()
-                    print(log)
                     
                     dismiss()
+                    dismissParent()
+                    
                 }.disabled(weight == nil || meal == nil)
             }
         }

@@ -1,6 +1,8 @@
 1. DONE (fix logging persistence)
 2. DONE (add deleting saved foods and handle food instances of deleted foods)
-3. add search to select food view
-4. add portion generalizations
-5. add barcode api or health kit shit
-6. add camera if barcode is done
+3. MAYBE DONE (add search to select food view)
+4. MAYBE DONE (fix navigation path)
+5. add portion generalizations
+6. add barcode api or health kit shit
+7. add camera if barcode is done
+8. add tags for searches with things like fruit, high protein, etc.

@@ -12,12 +12,10 @@ struct MealView : View {
     
     let meal: Meal
     let date: Date
-    @Binding var path: NavigationPath
     
-    init(_ meal: Meal, _ date: Date, path: Binding<NavigationPath>) {
+    init(_ meal: Meal, _ date: Date) {
         self.meal = meal
         self.date = date
-        self._path = path
     }
     
     var body : some View {
@@ -31,7 +29,7 @@ struct MealView : View {
             }.onDelete(perform: delete)
             
             NavigationLink {
-                SelectFoodView(meal.label, date, path: $path)
+                SelectFoodView(meal.label, date)
             } label: {
                 Label("Log Food", systemImage: "plus")
                     .foregroundStyle(.link)

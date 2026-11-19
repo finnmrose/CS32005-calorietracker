@@ -53,7 +53,6 @@ class DataContainer {
     
     func get_log() -> Log {
         let data = try? self.context.fetch(FetchDescriptor<Log>())
-        print(data?.first == nil ? "nil" : data!.first!)
         return data?.first ?? Log()
     
     }

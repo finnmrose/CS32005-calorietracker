@@ -13,17 +13,28 @@ import SwiftData
 
 struct SelectFoodView: View {
     @Query(sort: \Food.timestamp, order:.reverse) private var foods: [Food]
+    @Environment(\.dismiss) private var dismiss
     
-    @State private var newFood: Food?
-    @Binding var path: NavigationPath
+    @State private var searchQuery: String = ""
+    var isSearching: Bool { return !searchQuery.isEmpty }
+    
+    var results: [Food] {
+        guard isSearching else {return foods.filter{!$0.deleted}}
+        return foods.filter { food in
+            food.name
+                .lowercased()
+                .contains(searchQuery.lowercased())
+            &&
+            !food.isDeleted
+        }
+    }
     
     let meal: String?
     let date: Date?
     
-    init (_ meal: String? = nil, _ date: Date? = nil, path: Binding<NavigationPath>) {
+    init (_ meal: String? = nil, _ date: Date? = nil) {
         self.meal = meal
         self.date = date
-        self._path = path
     }
     
     var body: some View {
@@ -38,11 +49,15 @@ struct SelectFoodView: View {
                     }.navigationLinkIndicatorVisibility(.hidden)
                 }
                 
-                Section(header: Text("Saved Foods")) {
+                Section (
+                    header: Text("Saved Foods")
+                        .searchable(text: $searchQuery)
+                        .textInputAutocapitalization(.never)
+                ) {
                     List {
-                        ForEach(foods.filter({!$0.deleted})) { food in
+                        ForEach(results.sorted {$0.timestamp > $1.timestamp}) { food in
                             NavigationLink {
-                                LogFoodView(food, date: self.date ?? .now, meal: self.meal, path: $path)
+                                LogFoodView(food, date: self.date ?? .now, meal: self.meal, dismissParent: dismiss)
                             } label: {
                                 HStack {
                                     Text(food.name)
