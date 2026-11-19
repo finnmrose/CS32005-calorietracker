@@ -22,6 +22,7 @@ struct MealView : View {
         Section (header: MealHeaderView(meal: meal)) {
             ForEach(meal.foods) { food in
                 HStack {
+                    Text(food.amount_formatted)
                     Text(food.name)
                     Spacer()
                     Text("\(food.calories.formatted(.number.notation(.compactName)))")

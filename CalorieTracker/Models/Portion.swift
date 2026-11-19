@@ -30,14 +30,12 @@ enum Portion: CaseIterable, Identifiable, CustomStringConvertible, Codable {
     
     var unit: String {
         switch self {
-        case .count:
-            return "portion"
         case .weight:
             return "g"
         case .volume:
             return "ml"
         default:
-            return "none"
+            return ""
         }
     }
     
@@ -51,6 +49,17 @@ enum Portion: CaseIterable, Identifiable, CustomStringConvertible, Codable {
             return "100ml"
         default:
             return "none"
+        }
+    }
+    
+    var big_unit: String {
+        switch self {
+        case .weight:
+            return "kg"
+        case .volume:
+            return "L"
+        default:
+            return ""
         }
     }
     
