@@ -82,4 +82,22 @@ enum Portion: CaseIterable, Identifiable, CustomStringConvertible, Codable {
             return 1
         }
     }
+    
+    var isDiscrete: Bool {
+        switch self {
+        case .count:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var isContinuous: Bool {
+        switch self {
+        case .weight, .volume:
+            return true
+        default:
+            return false
+        }
+    }
 }

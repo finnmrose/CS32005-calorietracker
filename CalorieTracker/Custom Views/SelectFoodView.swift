@@ -12,9 +12,7 @@ import SwiftUI
 import SwiftData
 
 struct SelectFoodView: View {
-    @Query(sort: \Food.timestamp, order:.reverse) private var foods: [Food]
-    @Environment(\.dismiss) private var dismiss
-    
+    @Query(sort: \Food.timestamp, order:.reverse) private var foods: [Food]    
     @State private var searchQuery: String = ""
     var isSearching: Bool { return !searchQuery.isEmpty }
     
@@ -29,10 +27,10 @@ struct SelectFoodView: View {
         }
     }
     
-    let meal: String?
-    let date: Date?
+    let meal: String
+    let date: Date
     
-    init (_ meal: String? = nil, _ date: Date? = nil) {
+    init (_ meal: String, _ date: Date) {
         self.meal = meal
         self.date = date
     }
@@ -57,12 +55,12 @@ struct SelectFoodView: View {
                     List {
                         ForEach(results.sorted {$0.timestamp > $1.timestamp}) { food in
                             NavigationLink {
-                                LogFoodView(food, date: self.date ?? .now, meal: self.meal, dismissParent: dismiss)
+                                LogFoodView(food, date: self.date, meal: self.meal)
                             } label: {
                                 HStack {
                                     Text(food.name)
                                     Spacer()
-                                    Text(food.calories.formatted(.number.notation(.compactName)))
+                                    Text(food.calories.formatted(.number.notation(.compactName)) + (food.portion_type.isContinuous ? " / \(food.portion_type.unit)": ""))
                                 }
                             }
                         }.onDelete(perform: delete)

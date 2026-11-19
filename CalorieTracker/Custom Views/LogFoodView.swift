@@ -11,21 +11,19 @@ import SwiftData
 struct LogFoodView : View {
     
     let food: Food
-    let dismissParent: DismissAction
     
-    @State private var weight: Float? = nil
+    @State private var portion_size: Float? = nil
     @State private var date: Date
-    @State private var meal: String?
+    @State private var meal: String
     
     @Environment(\.modelContext) private var context
     @Environment(Log.self) private var log: Log
     @Environment(\.dismiss) private var dismiss
     
-    init(_ food: Food, date: Date = Date(), meal: String? = nil, dismissParent: DismissAction) {
+    init(_ food: Food, date: Date = Date(), meal: String) {
         self.food = food
         self.date = date
         self.meal = meal
-        self.dismissParent = dismissParent
     }
     
     var body : some View {
@@ -37,9 +35,9 @@ struct LogFoodView : View {
                 }
             }
             HStack {
-                Text("Portion Weight")
+                Text(food.portion_type.isContinuous ? "Portion Size (\(food.portion_type.unit))" : "Amount")
                 Spacer()
-                TextField("Required", value: $weight, format: .number)
+                TextField("Required", value: $portion_size, format: .number)
                     .multilineTextAlignment(.trailing)
                     .keyboardType(.decimalPad)
             }
@@ -50,7 +48,7 @@ struct LogFoodView : View {
                         HStack {
                             Text(item.long_name)
                             Spacer()
-                            Text("\(((food.nutritional_info[item] ?? 0) * (weight ?? 0) / 100).formatted(.number.notation(.compactName)))")
+                            Text("\(((food.nutritional_info[item] ?? 0) * (portion_size ?? 0)).formatted(.number.notation(.compactName)))")
                                 .multilineTextAlignment(.trailing)
                         }
                     }
@@ -62,15 +60,15 @@ struct LogFoodView : View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", systemImage: "checkmark") {
                     
-                    log[date][meal!]?.foods.append(FoodInstance(food, amount: weight ?? 0))
+                    log[date][meal]?.foods.append(FoodInstance(food, amount: portion_size ?? 0))
                     food.timestamp = .now
                     
                     try? context.save()
                     
                     dismiss()
-                    dismissParent()
+
                     
-                }.disabled(weight == nil || meal == nil)
+                }.disabled(portion_size == nil)
             }
         }
     }
