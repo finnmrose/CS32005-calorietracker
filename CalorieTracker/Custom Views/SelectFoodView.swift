@@ -16,6 +16,7 @@ struct SelectFoodView: View {
     @Environment(\.modelContext) private var context
     @Environment(Log.self) private var log
     
+    
     @State private var searchQuery: String = ""
     var isSearching: Bool { return !searchQuery.isEmpty }
     
@@ -30,11 +31,11 @@ struct SelectFoodView: View {
         }.sorted(by: {$0.timestamp > $1.timestamp})
     }
     
-    let meal: String
+    @Binding var meal: Meal
     let date: Date
     
-    init (_ meal: String, _ date: Date) {
-        self.meal = meal
+    init (_ meal: Binding<Meal>, _ date: Date) {
+        self._meal = meal
         self.date = date
     }
     
@@ -58,7 +59,7 @@ struct SelectFoodView: View {
                     List {
                         ForEach(results.sorted {$0.timestamp > $1.timestamp}) { food in
                             NavigationLink {
-                                LogFoodView(food, date: self.date, meal: self.meal)
+                                LogFoodView(food, date: self.date, meal: $meal)
                             } label: {
                                 HStack {
                                     Text(food.name)
@@ -69,7 +70,9 @@ struct SelectFoodView: View {
                         }.onDelete(perform: delete)
                     }
                 }
-            }.navigationTitle(Text("Log Food"))
+            }
+            .navigationTitle(Text("Log Food"))
+
         }
     }
     
@@ -79,8 +82,6 @@ struct SelectFoodView: View {
             // since some food instances could refer to them
             results[index].deleted = true
         }
-        
-        log.commit()
         try? context.save()
     }
 }

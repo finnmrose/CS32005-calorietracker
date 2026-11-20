@@ -14,24 +14,24 @@ struct LogFoodView : View {
     
     @State private var portion_size: Float? = nil
     @State private var date: Date
-    @State private var meal: String
+    @Binding private var meal: Meal
     
     @Environment(\.modelContext) private var context
     @Environment(Log.self) private var log: Log
     @Environment(\.dismiss) private var dismiss
     
-    init(_ food: Food, date: Date = Date(), meal: String) {
+    init(_ food: Food, date: Date = Date(), meal: Binding<Meal>) {
         self.food = food
         self.date = date
-        self.meal = meal
+        self._meal = meal
     }
     
     var body : some View {
         Form {
             DatePicker("Date", selection: $date, displayedComponents: [.date])
             Picker("Meal", selection: $meal) {
-                ForEach(log[date].meals) { meal in
-                    Text(meal.label).tag(meal.label)
+                ForEach(log[date].meals) { m in
+                    Text(m.label).tag(m)
                 }
             }
             HStack {
@@ -59,13 +59,10 @@ struct LogFoodView : View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", systemImage: "checkmark") {
-                    
-                    log[date][meal]?.foods.append(FoodInstance(food, amount: portion_size ?? 0))
+                    self.meal.foods.append(FoodInstance(food, amount: portion_size ?? 0))
                     food.timestamp = .now
-                    
-                    log.commit()
+                    log[date][meal.label] = meal
                     try? context.save()
-                    
                     dismiss()
 
                     

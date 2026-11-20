@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class Meal : Identifiable, Codable, CustomStringConvertible {
+class Meal : Identifiable, Codable, CustomStringConvertible, Equatable {
     enum CodingKeys: CodingKey {
         case id, label, foods, sortIndex
     }
@@ -60,5 +60,9 @@ class Meal : Identifiable, Codable, CustomStringConvertible {
         try container.encode(label, forKey: .label)
         try container.encode(foods, forKey: .foods)
         try container.encode(sortIndex, forKey: .sortIndex)
+    }
+    
+    static func == (lhs: Meal, rhs: Meal) -> Bool {
+        return lhs.label == rhs.label
     }
 }

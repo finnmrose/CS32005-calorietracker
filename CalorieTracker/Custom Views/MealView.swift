@@ -34,7 +34,7 @@ struct MealView : View {
             }.onDelete(perform: delete)
             
             NavigationLink {
-                SelectFoodView(meal.label, date)
+                SelectFoodView($meal, date)
             } label: {
                 Label("Log Food", systemImage: "plus")
                     .foregroundStyle(.link)
@@ -44,7 +44,7 @@ struct MealView : View {
     
     func delete(at offsets: IndexSet) {
         meal.foods.remove(atOffsets: offsets)
-        log.commit()
+        log[date][meal] = meal
         try? context.save()
     }
 }

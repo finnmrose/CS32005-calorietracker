@@ -2,9 +2,14 @@
 2. DONE (add deleting saved foods and handle food instances of deleted foods)
 3. MAYBE DONE (add search to select food view)
 4. MAYBE DONE (fix navigation path)
-5. add portion generalizations
+5. DONE (add portion generalizations)
 6. add settings for things like default goals and meals and shit
 7. add edit buttons to everything
 8. add barcode api or health kit shit
 9. add camera if barcode is done
 10. add tags for searches with things like fruit, high protein, etc.
+
+
+CRITIAL CRASH OUT
+Convert Create New Food to use an instance of Food for all its fields
+then you can populate the view with the results of the api lookup

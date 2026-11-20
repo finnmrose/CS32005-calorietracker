@@ -41,10 +41,41 @@ class Day: Codable, CustomStringConvertible {
         Day(breakfast:FoodInstance.sampleData, dinner:FoodInstance.sampleData)
     ]
     
-    subscript (index: String) -> Meal? {
+    subscript (index: String) -> Meal {
         get {
-            return self.data.first(where: {$0.label == index})
+            guard let found = self.data.first(where: {$0.label == index}) else {
+                let m = Meal(index, sortIndex: self.maxSortIndex() + 1)
+                self.data.append(m)
+                return m
+            }
+            return found
+        } set (newValue) {
+            guard let index = self.data.firstIndex(where: {$0.label == index}) else {
+                self.data.append(newValue)
+                return
+            }
+            self.data[index] = newValue
         }
+    }
+    
+    subscript (index: Meal) -> Meal {
+        get {
+            guard let found = self.data.first(where: {$0 == index}) else {
+                self.data.append(index)
+                return index
+            }
+            return found
+        } set (newValue) {
+            guard let index = self.data.firstIndex(where: {$0 == index}) else {
+                self.data.append(newValue)
+                return
+            }
+            self.data[index] = newValue
+        }
+    }
+    
+    func maxSortIndex() -> Int {
+        return meals.last?.sortIndex ?? -1
     }
     
     /*
