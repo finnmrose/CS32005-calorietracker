@@ -7,40 +7,56 @@
 
 import SwiftUI
 import SwiftData
+import VisionKit
 
 struct NewFoodView : View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     
-    @State private var name: String = ""
-    @State private var nutritional_info: [Food.Nutrient: Float] = [:]
+    @State var newFood: Food = Food()
     
     @State private var ingredients: [Food: Float] = [:]
     @State private var showSheet: Bool = false
-    
-    @State private var p_type: Portion = .none
-    @State private var p_size: Float? = nil
+
+    @State private var fetching: Bool = false
+    @State private var isShowingScanner: Bool = false
+    @State private var foundBarcode: String = ""
     
     var body : some View {
         Form {
+            if ingredients.isEmpty {
+                Section {
+                    HStack {
+                        Button("Scan Barcode", systemImage: "camera.viewfinder") {
+                            isShowingScanner = true
+                            fetching = false
+                        }
+                        Spacer()
+                        if !foundBarcode.isEmpty {
+                            ProgressView().foregroundStyle(.link)
+                        }
+                    }
+                }
+            }
+            
             HStack {
                 Text("Name")
-                TextField("Required", text: $name)
+                TextField("Required", text: $newFood.name)
                     .multilineTextAlignment(.trailing)
                     .autocorrectionDisabled()
                 
             }
-            Picker("Portion Type", selection: $p_type.animation()) {
+            Picker("Portion Type", selection: $newFood.portion_type.animation()) {
                 ForEach(Portion.allCases) { portion in
                     Text(portion.description)
                 }
             }.disabled(!ingredients.isEmpty)
             
-            if !name.isEmpty, !p_type.isNone {
-                Section(header: Text("Nutritional Information per \(p_type.alt_unit)")) {
+            if !newFood.name.isEmpty, !newFood.portion_type.isNone {
+                Section(header: Text("Nutritional Information per \(newFood.portion_type.alt_unit)")) {
                     ForEach(Food.Nutrient.allCases) { nutrient in
-                        FloatField(label: nutrient.long_name, value: $nutritional_info[nutrient], required: nutrient.required)
+                        FloatField(label: nutrient.long_name, value: $newFood.nutritional_info[nutrient], required: nutrient.required)
                     }
                 }
             }
@@ -65,10 +81,12 @@ struct NewFoodView : View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    context.insert(Food(name: name, portion_type: p_type, nutritional_info: nutritional_info.mapValues({$0 / p_type.input_scale})))
+                    newFood.nutritional_info = newFood.nutritional_info.mapValues({$0 / newFood.portion_type.input_scale})
+                    
+                    context.insert(newFood)
                     try? context.save()
                     dismiss()
-                }.disabled(name.isEmpty || p_type.isNone || required_values_not_filled())
+                }.disabled(newFood.name.isEmpty || newFood.portion_type.isNone || required_values_not_filled())
             }
         }
         .sheet(isPresented: $showSheet, onDismiss: update_ingredients) {
@@ -77,11 +95,28 @@ struct NewFoodView : View {
                     .presentationDragIndicator(.visible)
             }
         }
+        .sheet(isPresented: $isShowingScanner) {
+            BarcodeScannerView { barcode in
+                self.foundBarcode = barcode.payloadStringValue ?? ""
+                isShowingScanner = false
+                Task {
+                    do {
+                        newFood = try await BarcodeAPI.lookupBarcode(foundBarcode)
+                        self.foundBarcode = ""
+                        ingredients = [:]
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+            } onCancel: {
+                isShowingScanner = false
+            }.presentationDragIndicator(.visible)
+        }
     }
     
     func required_values_not_filled() -> Bool {
         for nutrient in Food.Nutrient.allCases {
-            if nutrient.required && !nutritional_info.keys.contains(nutrient) {
+            if nutrient.required && !newFood.nutritional_info.keys.contains(nutrient) {
                 return true
             }
         }
@@ -90,15 +125,15 @@ struct NewFoodView : View {
     
     func update_ingredients() {
         if !ingredients.isEmpty {
-            p_type = .count
-            name = name.isEmpty ? "New Food" : name
+            newFood.portion_type = .count
+            newFood.name = newFood.name.isEmpty ? "New Food" : newFood.name
         }
         
-        nutritional_info = [:]
+        newFood.nutritional_info = [:]
         
         for i in ingredients.keys {
             for n in i.nutritional_info.keys {
-                nutritional_info[n, default: 0] += (i[n] ?? 0) * ingredients[i]!
+                newFood.nutritional_info[n, default: 0] += (i[n] ?? 0) * ingredients[i]!
             }
         }
     }

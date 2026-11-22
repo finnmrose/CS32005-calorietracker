@@ -92,6 +92,13 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         return output
     }
     
+    init() {
+        self.name = ""
+        self.portion_type = .none
+        self.nutritional_info = [:]
+        self.timestamp = .now
+    }
+    
     init(name: String, portion_type: Portion, calories: Float = 0, carbs: Float = 0, protein: Float = 0, fats: Float = 0) {
         self.name = name
         self.portion_type = portion_type
