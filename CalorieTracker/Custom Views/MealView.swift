@@ -45,6 +45,7 @@ struct MealView : View {
     func delete(at offsets: IndexSet) {
         meal.foods.remove(atOffsets: offsets)
         log[date][meal] = meal
+        log.commit()
         try? context.save()
     }
 }
