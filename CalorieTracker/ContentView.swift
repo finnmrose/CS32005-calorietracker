@@ -21,3 +21,8 @@ struct ContentView: View {
         .sampleDataContainer()
     
 }
+
+#Preview("No data") {
+    ContentView()
+        .emptyDataContainer()
+}

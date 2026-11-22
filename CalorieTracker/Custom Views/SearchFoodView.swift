@@ -10,7 +10,8 @@ import SwiftData
 
 struct SearchFoodView: View {
     
-    @Query private var foods: [Food]
+    @Query(filter: #Predicate<Food> { food in
+        !food.deleted}) private var foods: [Food]
     
     @State private var searchResults: [Food] = []
     @State private var searchQuery: String = ""
@@ -18,7 +19,7 @@ struct SearchFoodView: View {
     @Binding var ingredients: [Food: Float]
     
     var results: [Food] {
-        return isSearching ? searchResults.filter{!$0.deleted}.sorted{$0.timestamp > $1.timestamp} : foods.filter{!$0.deleted}.sorted{$0.timestamp > $1.timestamp}
+        return isSearching ? searchResults.sorted{$0.timestamp > $1.timestamp} : foods.sorted{$0.timestamp > $1.timestamp}
     }
     
     var isSearching: Bool {
@@ -46,8 +47,6 @@ struct SearchFoodView: View {
             food.name
                 .lowercased()
                 .contains(searchQuery)
-            &&
-            !food.deleted
         }
     }
 }

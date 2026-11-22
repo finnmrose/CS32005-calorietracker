@@ -32,7 +32,7 @@ enum BarcodeAPI {
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Server Error"])
         }
-        
+        try? await Task.sleep(nanoseconds: 2000000000)
         let info = try JSONDecoder().decode(Food.self, from: data)
         return info
     }

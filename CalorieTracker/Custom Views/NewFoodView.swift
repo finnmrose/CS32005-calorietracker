@@ -10,6 +10,9 @@ import SwiftData
 import VisionKit
 
 struct NewFoodView : View {
+    @Query(filter: #Predicate<Food> { food in
+        !food.deleted}
+    ) private var foods: [Food]
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
@@ -23,9 +26,13 @@ struct NewFoodView : View {
     @State private var isShowingScanner: Bool = false
     @State private var foundBarcode: String = ""
     
+    var scannerAvailable: Bool {
+        return DataScannerViewController.isSupported && DataScannerViewController.isAvailable
+    }
+    
     var body : some View {
         Form {
-            if ingredients.isEmpty {
+            if ingredients.isEmpty, scannerAvailable {
                 Section {
                     HStack {
                         Button("Scan Barcode", systemImage: "camera.viewfinder") {
@@ -60,21 +67,23 @@ struct NewFoodView : View {
                     }
                 }
             }
-            Section(header: Text("Ingredients")) {
-                Button("Add Ingredient", systemImage: "plus") {
-                    showSheet.toggle()
-                }.foregroundStyle(.link)
-                
-                List {
-                    ForEach(Array(ingredients.keys)) { food in
-                        HStack {
-                            Text(FoodInstance.format_amount(food, amount: ingredients[food]!))
-                            Text(food.name)
-                        }
-                    }.onDelete(perform: delete)
-                }
-                
-            }.navigationLinkIndicatorVisibility(.hidden)
+            if !foods.isEmpty {
+                Section(header: Text("Ingredients")) {
+                    Button("Add Ingredient", systemImage: "plus") {
+                        showSheet.toggle()
+                    }.foregroundStyle(.link)
+                    
+                    List {
+                        ForEach(Array(ingredients.keys)) { food in
+                            HStack {
+                                Text(FoodInstance.format_amount(food, amount: ingredients[food]!))
+                                Text(food.name)
+                            }
+                        }.onDelete(perform: delete)
+                    }
+                    
+                }.navigationLinkIndicatorVisibility(.hidden)
+            }
         }
         .navigationTitle(Text("Create new food"))
         .navigationBarTitleDisplayMode(.inline)

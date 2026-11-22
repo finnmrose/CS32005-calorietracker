@@ -12,7 +12,11 @@ import SwiftUI
 import SwiftData
 
 struct SelectFoodView: View {
-    @Query(sort: \Food.timestamp, order:.reverse) private var foods: [Food]
+    @Query(
+        sort: \Food.timestamp,
+        order:.reverse
+    ) private var foods: [Food]
+    
     @Environment(\.modelContext) private var context
     @Environment(Log.self) private var log
     
@@ -51,23 +55,25 @@ struct SelectFoodView: View {
                     }.navigationLinkIndicatorVisibility(.hidden)
                 }
                 
-                Section (
-                    header: Text("Saved Foods")
-                        .searchable(text: $searchQuery)
-                        .textInputAutocapitalization(.never)
-                ) {
-                    List {
-                        ForEach(results.sorted {$0.timestamp > $1.timestamp}) { food in
-                            NavigationLink {
-                                LogFoodView(food, date: self.date, meal: $meal)
-                            } label: {
-                                HStack {
-                                    Text(food.name)
-                                    Spacer()
-                                    Text((food.calories * food.portion_type.input_scale).formatted(.number.notation(.compactName)) + "kcal / " + food.portion_type.alt_unit)
+                if !foods.filter({!$0.deleted}).isEmpty {
+                    Section (
+                        header: Text("Saved Foods")
+                            .searchable(text: $searchQuery)
+                            .textInputAutocapitalization(.never)
+                    ) {
+                        List {
+                            ForEach(results.sorted {$0.timestamp > $1.timestamp}) { food in
+                                NavigationLink {
+                                    LogFoodView(food, date: self.date, meal: $meal)
+                                } label: {
+                                    HStack {
+                                        Text(food.name)
+                                        Spacer()
+                                        Text((food.calories * food.portion_type.input_scale).formatted(.number.notation(.compactName)) + "kcal / " + food.portion_type.alt_unit)
+                                    }
                                 }
-                            }
-                        }.onDelete(perform: delete)
+                            }.onDelete(perform: delete)
+                        }
                     }
                 }
             }

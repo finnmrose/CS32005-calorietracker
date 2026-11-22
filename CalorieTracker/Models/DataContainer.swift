@@ -60,6 +60,7 @@ class DataContainer {
 
 
 private let sampleContainer = DataContainer(includeSampleData: true)
+private let emptyContainer = DataContainer()
 
 extension View {
     func sampleDataContainer() -> some View {
@@ -70,6 +71,16 @@ extension View {
             .environment(sampleContainer)
             .environment(data?.first ?? Log())
             .modelContainer(sampleContainer.modelContainer)
+    }
+    
+    func emptyDataContainer() -> some View {
+        let request = FetchDescriptor<Log>()
+        let data = try? emptyContainer.context.fetch(request)
+        
+        return self
+            .environment(emptyContainer)
+            .environment(data?.first ?? Log())
+            .modelContainer(emptyContainer.modelContainer)
     }
     
     func withLog(_ dataContainer: DataContainer) -> some View {
