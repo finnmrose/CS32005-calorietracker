@@ -19,6 +19,7 @@ class Meal : Identifiable, Codable, CustomStringConvertible, Equatable {
     var foods: [FoodInstance]
     var sortIndex: Int
     
+    @MainActor
     var description: String {
         return "(\(self.sortIndex)) \"\(self.label)\": [" + foods.map({"\($0)"}).joined(separator: ", ") + "]"
     }
