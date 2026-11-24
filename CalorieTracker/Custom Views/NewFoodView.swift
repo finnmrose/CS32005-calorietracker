@@ -114,6 +114,7 @@ struct NewFoodView : View {
                         self.foundBarcode = ""
                         ingredients = [:]
                     } catch {
+                        self.foundBarcode = ""
                         print(error.localizedDescription)
                     }
                 }

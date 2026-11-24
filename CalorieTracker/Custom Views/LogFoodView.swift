@@ -29,6 +29,9 @@ struct LogFoodView : View {
     var body : some View {
         Form {
             DatePicker("Date", selection: $date, displayedComponents: [.date])
+                .onChange(of: date) {
+                    self.meal = log[date].meals.first!
+                }
             Picker("Meal", selection: $meal) {
                 ForEach(log[date].meals) { m in
                     Text(m.label).tag(m)
@@ -64,7 +67,8 @@ struct LogFoodView : View {
                     log[date][meal.label] = meal
                     log.commit()
                     
-                    try? context.save()
+                    print(context.changedModelsArray)
+                    
                     dismiss()
 
                     

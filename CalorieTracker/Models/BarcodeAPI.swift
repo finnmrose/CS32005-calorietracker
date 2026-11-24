@@ -26,9 +26,14 @@ enum BarcodeAPI {
     static func lookupBarcode(_ query: String) async throws -> Food {
         let urlString = "http://172.20.10.4:10000/" + query
         
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 10
+        
         guard let url = URL(string: urlString) else { throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"]) }
         
-        let (data, response) = try await URLSession.shared.data(from: url)
+        let session = URLSession(configuration: config)
+        
+        let (data, response) = try await session.data(from: url)
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Server Error"])
         }

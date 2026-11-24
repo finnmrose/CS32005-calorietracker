@@ -34,7 +34,7 @@ class Log: CustomStringConvertible {
             return data.first(where: {key, value in
                 return Calendar.current.isDate(key, inSameDayAs: index)
             })?.value ?? {
-                let d = newDay(index)
+                let d = Day(index, meals: default_meals, goals: default_goals)
                 data[index] = d
                 return d
             }()
@@ -47,18 +47,14 @@ class Log: CustomStringConvertible {
     // this function just does a something to Log so it properly gets saved via SwiftData
     // otherwise when things only modify objects inside Log (and not Log itself)
     // SwiftData fails to detect something has changed and doesn't save the data
-    func newDay(_ date: Date) -> Day {
-        return Day(date, meals: default_meals, goals: default_goals)
-    }
-    
     func commit() {
         c.toggle()
     }
     
-    func add(_ date: Date) -> Day {
-        let d = newDay(date)
-        data[date] = d
-        return d
+    func reset() {
+        self.data = [:]
+        self.default_goals = Dictionary<Food.Nutrient, Float>(uniqueKeysWithValues: [(Food.Nutrient.calories, Float(2000)), (Food.Nutrient.carbohydrates, Float(260)), (Food.Nutrient.protein, Float(100)), (Food.Nutrient.fats, Float(70))])
+        self.default_meals = [Meal("Breakfast", sortIndex: 0), Meal("Lunch", sortIndex: 1), Meal("Dinner", sortIndex: 2), Meal("Other", sortIndex: 3)]
     }
     
     static let sampleData = Log([.now: Day.sampleData.first!])

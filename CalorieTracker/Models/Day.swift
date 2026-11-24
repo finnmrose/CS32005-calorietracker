@@ -22,7 +22,7 @@ class Day: Codable, CustomStringConvertible {
     }
     
     var description: String {
-        return "\n\(date.formatted(date:.abbreviated, time:.omitted)):\n\t" + meals.map({"\($0)"}).joined(separator: "\n\t") + "\n"
+        return "\n\(date.formatted(date:.abbreviated, time:.omitted)):\n\t" + meals.map({"\($0.sortIndex) \($0)"}).joined(separator: "\n\t") + "\n"
     }
     
     init(_ date: Date = .now, meals: [Meal] = [Meal("Breakfast", sortIndex: 0), Meal("Lunch", sortIndex: 1), Meal("Dinner", sortIndex: 2), Meal("Other", sortIndex: 3)], goals: [Food.Nutrient: Float] = [.calories:2000, .carbohydrates:260, .protein: 50, .fats:70]) {
