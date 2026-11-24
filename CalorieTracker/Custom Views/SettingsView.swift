@@ -19,7 +19,8 @@ struct SettingsView: View {
     @State private var initial_goals: [Food.Nutrient: Float] = [:]
     @State private var initial_meals: [Meal] = []
     
-    @State private var confirming: Bool = false
+    @State private var confirm_reset: Bool = false
+    @State private var confirm_change: Bool = false
     
     var body: some View {
         @Bindable var log = log
@@ -30,10 +31,10 @@ struct SettingsView: View {
         }
         
         Form {
-            Section (header: Text("Daily Goals")) {
+            Section (header: Text("Default Goals")) {
                 ForEach(log.default_goals.keys.sorted(by: {$0.rawValue < $1.rawValue})) { key in
                     FloatField(label: key.long_name, value: $log.default_goals[key], required: false)
-                }.onDelete(perform: delete)
+                }.onDelete(perform: delete_goal)
                 
                 if !remaining_nutrients.isEmpty {
                     Picker(selection: $selection) {
@@ -54,24 +55,24 @@ struct SettingsView: View {
                 }
             }
             
-            Section(header: Text("Daily Meals")) {
+            Section(header: Text("Default Meals")) {
                 ForEach($log.default_meals.sorted(by: {$0.sortIndex.wrappedValue < $1.sortIndex.wrappedValue})) { $meal in
                     TextField(meal.label, text: $meal.label)
-                }
+                }.onDelete(perform: delete_meal)
             }
             
-            Button("Delete all stored data", systemImage: "trash", role: .destructive) {
-                confirming = true
+            Button("Reset all data", role: .destructive) {
+                confirm_reset = true
             }
             .foregroundStyle(.red)
-            .alert("This will delete all stored data. Are you sure?", isPresented: $confirming) {
+            .alert("This will delete all stored data. Are you sure?", isPresented: $confirm_reset) {
                 Button("Cancel", role: .cancel) {
-                    confirming = false
+                    confirm_reset = false
                 }
                 
                 Button("Delete", role: .destructive) {
                     dataContainer.reset()
-                    confirming = false
+                    confirm_reset = false
                     dismiss()
                 }
             }
@@ -79,15 +80,31 @@ struct SettingsView: View {
         }.toolbar {
             ToolbarItem (placement: .confirmationAction) {
                 Button("Save", role: .confirm) {
-                    if log.default_goals != initial_goals {
-                        log[date].goals = log.default_goals
+                    if log[date].isEmpty {
+                        if log.default_goals != initial_goals {
+                            log[date].goals = log.default_goals
+                            log.commit()
+                            dismiss()
+                        }
+                        if log.default_meals != initial_meals {
+                            log[date].data = log.default_meals
+                            log.commit()
+                            dismiss()
+                        }
+                    } else {
+                        confirm_change = true
                     }
-                    if log.default_meals != initial_meals {
-                        log[date].data = log.default_meals.copy()
+                }
+                .disabled(log.default_goals == initial_goals && log.default_meals == initial_meals)
+                .alert("Current day \(date.formatted(date: .abbreviated, time: .omitted)) contains data. Changes will only affect future days.", isPresented: $confirm_change) {
+                    Button("Cancel", role: .cancel) {
+                        confirm_change = false
                     }
-                    log.commit()
-                    dismiss()
-                }.disabled(log.default_goals == initial_goals && log.default_meals == initial_meals)
+                    Button("OK", role: .confirm) {
+                        log.commit()
+                        dismiss()
+                    }
+                }
             }
             ToolbarItem (placement: .cancellationAction) {
                 Button("Cancel", systemImage: "chevron.left", role: .cancel) {
@@ -107,12 +124,19 @@ struct SettingsView: View {
         }
     }
     
-    func delete(at offsets: IndexSet) {
+    func delete_goal(at offsets: IndexSet) {
         if let ndx = offsets.first {
             let item = log.default_goals.keys.sorted(by: {$0.rawValue < $1.rawValue})[ndx]
             log.default_goals.removeValue(forKey: item)
             log.commit()
         }
+    }
+    
+    func delete_meal(at offsets: IndexSet) {
+        var l = log.default_meals.sorted(by: {$0.sortIndex < $1.sortIndex})
+        l.remove(atOffsets: offsets)
+        log.default_meals = l
+        log.commit()
     }
 }
 

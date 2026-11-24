@@ -92,7 +92,7 @@ class Day: Codable, CustomStringConvertible {
         return meals.reduce(0, {$0 + $1.foods.reduce(0, {$0 + ($1[field] ?? 0)})})
     }
     
-    func isEmpty() -> Bool {
+    var isEmpty: Bool {
         return data.reduce(0, {$0 + $1.foods.count}) == 0
     }
     

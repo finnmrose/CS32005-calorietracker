@@ -23,6 +23,10 @@ class Meal : Identifiable, Codable, CustomStringConvertible, Equatable {
         return "(\(self.sortIndex)) \"\(self.label)\": [" + foods.map({"\($0)"}).joined(separator: ", ") + "]"
     }
     
+    var isEmpty: Bool {
+        return foods.isEmpty
+    }
+    
     init(_ label: String, foods: [FoodInstance] = [], sortIndex: Int = -1) {
         self.label = label
         self.sortIndex = sortIndex

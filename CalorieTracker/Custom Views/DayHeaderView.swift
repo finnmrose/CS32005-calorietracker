@@ -37,7 +37,7 @@ struct DayHeaderView : View {
                             displayedComponents: [.date]
                         ).blendMode(.destinationOver)
                             .onChange(of: date) { oldDate, newDate in
-                                if log[oldDate].isEmpty() {
+                                if log[oldDate].isEmpty {
                                     log.data.removeValue(forKey: oldDate)
                                 }
                                 day = log[newDate]
