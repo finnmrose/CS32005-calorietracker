@@ -84,4 +84,8 @@ extension Array where Element == Meal {
             fatalError("Error making deep copy: \(error)")
         }
     }
+    
+    var next_index: Int {
+        return self.sorted(by: {$0.sortIndex < $1.sortIndex}).last!.sortIndex + 1
+    }
 }

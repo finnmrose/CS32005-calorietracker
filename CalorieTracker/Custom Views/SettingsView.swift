@@ -44,7 +44,7 @@ struct SettingsView: View {
                             Text(nutrient.long_name).tag(nutrient)
                         }
                     } label: {
-                        Label("New Goal", systemImage: "plus")
+                        Label("Add Goal", systemImage: "plus")
                             .foregroundStyle(.link)
                     }
                     .onChange(of: selection) {
@@ -60,6 +60,10 @@ struct SettingsView: View {
                 ForEach($log.default_meals.sorted(by: {$0.sortIndex.wrappedValue < $1.sortIndex.wrappedValue})) { $meal in
                     TextField(meal.label, text: $meal.label)
                 }.onDelete(perform: delete_meal)
+                
+                Button("Add Meal", systemImage: "plus") {
+                    log.default_meals.append(Meal("New Meal", sortIndex: log.default_meals.next_index))
+                }
             }
             
             Section(header: Text("Delete Data")) {
