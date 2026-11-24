@@ -21,6 +21,7 @@ struct SettingsView: View {
     
     @State private var confirm_reset: Bool = false
     @State private var confirm_change: Bool = false
+    @State private var confirm_delete: Bool = false
     
     var body: some View {
         @Bindable var log = log
@@ -61,19 +62,37 @@ struct SettingsView: View {
                 }.onDelete(perform: delete_meal)
             }
             
-            Button("Reset all data", role: .destructive) {
-                confirm_reset = true
-            }
-            .foregroundStyle(.red)
-            .alert("This will delete all stored data. Are you sure?", isPresented: $confirm_reset) {
-                Button("Cancel", role: .cancel) {
-                    confirm_reset = false
+            Section(header: Text("Delete Data")) {
+                
+                Button("Delete current day data", role: .destructive) {
+                    confirm_delete = true
+                }
+                .alert("This will delete all data for \(date.formatted(date: .abbreviated, time: .omitted)). Are you sure?", isPresented: $confirm_delete) {
+                    Button("Cancel", role: .cancel) {
+                        confirm_delete = false
+                    }
+                    
+                    Button("Delete", role: .destructive) {
+                        log.data.removeValue(forKey: date)
+                        log.commit()
+                        dismiss()
+                    }
                 }
                 
-                Button("Delete", role: .destructive) {
-                    dataContainer.reset()
-                    confirm_reset = false
-                    dismiss()
+                Button("Reset all data", role: .destructive) {
+                    confirm_reset = true
+                }
+                .foregroundStyle(.red)
+                .alert("This will delete all stored data. Are you sure?", isPresented: $confirm_reset) {
+                    Button("Cancel", role: .cancel) {
+                        confirm_reset = false
+                    }
+                    
+                    Button("Delete", role: .destructive) {
+                        dataContainer.reset()
+                        confirm_reset = false
+                        dismiss()
+                    }
                 }
             }
             
