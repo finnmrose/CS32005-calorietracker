@@ -9,10 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(Log.self) private var log
-    
     var body: some View {
-        DayView(log[.now])
+        DayView(.now)
     }
 }
 

@@ -67,8 +67,6 @@ struct LogFoodView : View {
                     log[date][meal.label] = meal
                     log.commit()
                     
-                    print(context.changedModelsArray)
-                    
                     dismiss()
 
                     

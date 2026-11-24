@@ -21,7 +21,8 @@ class DataContainer {
     init(includeSampleData: Bool = false) {
         let schema = Schema([
             Food.self,
-            Log.self
+            Log.self,
+            Day.self
         ])
         
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: includeSampleData)
@@ -56,6 +57,19 @@ class DataContainer {
         return data?.first ?? Log()
     
     }
+    
+    func reset() {
+        
+        do {
+            try self.context.save()
+            try self.context.delete(model: Food.self)
+            get_log().reset()
+            
+            try self.context.save()
+        } catch {
+            print("Failed to reset DataContainer: \(error)")
+        }
+    }
 }
 
 
@@ -86,7 +100,7 @@ extension View {
     func withLog(_ dataContainer: DataContainer) -> some View {
         let request = FetchDescriptor<Log>()
         let data = try? dataContainer.context.fetch(request)
-        
-        return self.environment(data?.first ?? Log())
+        let l = data?.first ?? Log()
+        return self.environment(l)
     }
 }

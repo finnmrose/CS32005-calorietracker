@@ -10,10 +10,14 @@ import SwiftData
 
 struct DayView : View {
     
+    @Environment(Log.self) private var log: Log
     @State var day: Day
+    @State private var refresh: Bool = false
+    private let date: Date
     
-    init(_ day: Day) {
-        self.day = day
+    init(_ date: Date) {
+        self.date = date
+        self.day = Day(date)
     }
     
     var body : some View {
@@ -29,12 +33,19 @@ struct DayView : View {
                 
                 NavigationLink {
                     SettingsView(date: day.date)
+                        .onDisappear {
+                            day = log[date]
+                            refresh.toggle()
+                        }
                 } label: {
                     Label("Settings", systemImage: "gearshape.fill")
+                        .foregroundStyle(.link)
                 }
+                
             }
-            
-
+        }
+        .onAppear {
+            day = log[date]
         }
     }
 }

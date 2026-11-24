@@ -7,13 +7,18 @@
 
 import SwiftUI
 import Foundation
+import SwiftData
 
 struct SettingsView: View {
     @Environment(Log.self) private var log
     @Environment(\.dismiss) private var dismiss
+    @Environment(DataContainer.self) private var dataContainer
+    
     let date: Date
     @State private var s: Food.Nutrient = .none
-    @State var initial_goals: [Food.Nutrient: Float] = [:]
+    @State private var initial_goals: [Food.Nutrient: Float] = [:]
+    
+    @State private var confirming: Bool = false
     
     var body: some View {
         @Bindable var log = log
@@ -48,6 +53,29 @@ struct SettingsView: View {
                 }
             }
             
+            Section(header: Text("Daily Meals")) {
+                List {
+                    ForEach(log.default_meals) { meal in
+                        Text(meal.label)
+                    }.reorderable()
+                }.reorderContainer(for: Meal.self, move: move)
+            }
+            
+            Button("Delete all stored data", systemImage: "trash", role: .destructive) {
+                confirming = true
+            }
+            .foregroundStyle(.red)
+            .alert("This will delete all stored data. Are you sure?", isPresented: $confirming) {
+                Button("Cancel", role: .cancel) {
+                    confirming = false
+                }
+                
+                Button("Delete", role: .destructive) {
+                    dataContainer.reset()
+                    confirming = false
+                    dismiss()
+                }
+            }
             
         }.toolbar {
             ToolbarItem (placement: .confirmationAction) {

@@ -34,7 +34,7 @@ class Log: CustomStringConvertible {
             return data.first(where: {key, value in
                 return Calendar.current.isDate(key, inSameDayAs: index)
             })?.value ?? {
-                let d = Day(index, meals: default_meals, goals: default_goals)
+                let d = Day(index, goals: default_goals)
                 data[index] = d
                 return d
             }()
