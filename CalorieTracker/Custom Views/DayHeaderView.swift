@@ -49,7 +49,7 @@ struct DayHeaderView : View {
             HStack {
                 ForEach(day.goals.keys.sorted(by: {$0.rawValue < $1.rawValue})) { nutrient in
                     if nutrient.rawValue > 0 { Spacer() }
-                    GoalWheel(label: Text(nutrient.short_name), value: day.total(field: nutrient), goal: day.goals[nutrient] ?? 0, color: nutrient.color)
+                    GoalWheel(day: $day, nutrient: nutrient)
                     
                 }
             }
@@ -58,16 +58,16 @@ struct DayHeaderView : View {
 }
 
 struct GoalWheel: View {
-    let label: Text
-    let value: Float
-    let goal: Float
-    let color: Color
+    @Binding var day: Day
+    let nutrient: Food.Nutrient
     
     var body : some View {
-        let progress = value / goal
+        let value = day.total(field: nutrient)
+        let goal = day.goals[nutrient] ?? value
         
+        let progress =  value / goal
         VStack {
-            label
+            Text(nutrient.short_name)
             
             ZStack {
                 Circle()
@@ -77,7 +77,7 @@ struct GoalWheel: View {
                 Circle()
                     .trim(from: CGFloat(1 - progress))
                     .fill(.opacity(0))
-                    .stroke(color, lineWidth: 10)
+                    .stroke(nutrient.color, lineWidth: 10)
                     .frame(width: 60, height: 60)
                     .rotationEffect(.degrees(-90))
                 
@@ -85,8 +85,8 @@ struct GoalWheel: View {
             }
             
             Divider().hidden()
-            Text(value.formatted(UTILS.SHORT_FORMAT))
-            Text(goal.formatted(UTILS.SHORT_FORMAT))
+            Text(value.formatted(UTILS.SHORT_FORMAT) + nutrient.unit)
+            Text(goal.formatted(UTILS.SHORT_FORMAT) + nutrient.unit)
         }
     }
     

@@ -17,6 +17,10 @@ class Log: CustomStringConvertible {
     private var c: Bool = false
     
     var data: [Date: Day]
+    // for SOME reason you have to define dictionaries in this super verbose way in this class i dont know why its only here and nowhere else
+    var default_goals: [Food.Nutrient: Float] = Dictionary<Food.Nutrient, Float>(uniqueKeysWithValues: [(Food.Nutrient.calories, Float(2000)), (Food.Nutrient.carbohydrates, Float(260)), (Food.Nutrient.protein, Float(100)), (Food.Nutrient.fats, Float(70))])
+    var default_meals: [Meal] = [Meal("Breakfast", sortIndex: 0), Meal("Lunch", sortIndex: 1), Meal("Dinner", sortIndex: 2), Meal("Other", sortIndex: 3)]
+    
     var description: String {
         return self.data.values.description
     }
@@ -30,7 +34,7 @@ class Log: CustomStringConvertible {
             return data.first(where: {key, value in
                 return Calendar.current.isDate(key, inSameDayAs: index)
             })?.value ?? {
-                let d = Day(index)
+                let d = newDay(index)
                 data[index] = d
                 return d
             }()
@@ -43,8 +47,18 @@ class Log: CustomStringConvertible {
     // this function just does a something to Log so it properly gets saved via SwiftData
     // otherwise when things only modify objects inside Log (and not Log itself)
     // SwiftData fails to detect something has changed and doesn't save the data
+    func newDay(_ date: Date) -> Day {
+        return Day(date, meals: default_meals, goals: default_goals)
+    }
+    
     func commit() {
         c.toggle()
+    }
+    
+    func add(_ date: Date) -> Day {
+        let d = newDay(date)
+        data[date] = d
+        return d
     }
     
     static let sampleData = Log([.now: Day.sampleData.first!])

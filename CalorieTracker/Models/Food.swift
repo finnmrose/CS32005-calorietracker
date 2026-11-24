@@ -17,8 +17,9 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         case id, name, portion, calories, nutritional_info, ingredients, timestamp
     }
     
-    enum Nutrient : Int, CaseIterable, Codable, Identifiable {
+    enum Nutrient : Int, CaseIterable, Codable, Identifiable, Hashable {
         var id: Int {return self.rawValue}
+        case none = -1
         case calories = 0
         case carbohydrates = 1
         case protein = 2
@@ -30,7 +31,9 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
             case .carbohydrates: return "Total Carbohydrate"
             case .protein: return "Protein"
             case .fats: return "Total Fat"
+            default: return ""
             }
+            
         }
         
         var short_name: String {
@@ -65,6 +68,19 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
                 return false
             }
         }
+        
+        var unit: String {
+            switch self {
+            case .calories:
+                return ""
+            case .carbohydrates, .protein, .fats:
+                return "g"
+            default:
+                return ""
+            }
+        }
+        
+        static var allCases: AllCases = [.calories, .carbohydrates, .protein, .fats]
     }
     
     var id: UUID = UUID()

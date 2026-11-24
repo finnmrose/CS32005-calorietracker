@@ -4,8 +4,8 @@
 4. MAYBE DONE (fix navigation path)
 5. DONE (add portion generalizations)
 6. add settings for things like default goals and meals and shit
-7. add edit buttons to everything
 8. DONE (add barcode api or health kit shit)
 9. DONE (add camera if barcode is done)
 10. add tags for searches with things like fruit, high protein, etc.
 11. DONE (add dialog when no data is found in select food and search food)
+12. edit foods from select food view

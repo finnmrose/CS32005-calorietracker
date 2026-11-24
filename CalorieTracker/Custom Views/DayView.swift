@@ -26,13 +26,15 @@ struct DayView : View {
                 ForEach(day.meals) { meal in
                     MealView(meal, day.date)
                 }
+                
+                NavigationLink {
+                    SettingsView(date: day.date)
+                } label: {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
             }
+            
+
         }
     }
 }
-
-#Preview {
-    DayView(Log.sampleData[.now])
-        .environment(Log.sampleData)
-}
-

@@ -20,12 +20,12 @@ class Meal : Identifiable, Codable, CustomStringConvertible, Equatable {
     var sortIndex: Int
     
     var description: String {
-        return "\"\(self.label)\": [" + foods.map({"\($0)"}).joined(separator: ", ") + "]"
+        return "(\(self.sortIndex)) \"\(self.label)\": [" + foods.map({"\($0)"}).joined(separator: ", ") + "]"
     }
     
     init(_ label: String, foods: [FoodInstance] = [], sortIndex: Int = -1) {
         self.label = label
-        self.sortIndex = -1
+        self.sortIndex = sortIndex
         self.foods = foods
     }
     
