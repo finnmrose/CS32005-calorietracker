@@ -50,11 +50,11 @@ class Day: Codable, CustomStringConvertible {
             }
             return found
         } set (newValue) {
-            guard let index = self.data.firstIndex(where: {$0.label == index}) else {
+            guard let i = self.data.firstIndex(where: {$0.label == index}) else {
                 self.data.append(newValue)
                 return
             }
-            self.data[index] = newValue
+            self.data[i] = newValue
         }
     }
     
@@ -66,11 +66,11 @@ class Day: Codable, CustomStringConvertible {
             }
             return found
         } set (newValue) {
-            guard let index = self.data.firstIndex(where: {$0 == index}) else {
+            guard let i = self.data.firstIndex(where: {$0 == index}) else {
                 self.data.append(newValue)
                 return
             }
-            self.data[index] = newValue
+            self.data[i] = newValue
         }
     }
     

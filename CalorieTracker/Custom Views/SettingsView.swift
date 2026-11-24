@@ -15,8 +15,9 @@ struct SettingsView: View {
     @Environment(DataContainer.self) private var dataContainer
     
     let date: Date
-    @State private var s: Food.Nutrient = .none
+    @State private var selection: Food.Nutrient = .none
     @State private var initial_goals: [Food.Nutrient: Float] = [:]
+    @State private var initial_meals: [Meal] = []
     
     @State private var confirming: Bool = false
     
@@ -35,7 +36,7 @@ struct SettingsView: View {
                 }.onDelete(perform: delete)
                 
                 if !remaining_nutrients.isEmpty {
-                    Picker(selection: $s) {
+                    Picker(selection: $selection) {
                         Text("").tag(Food.Nutrient.none)
                         ForEach(remaining_nutrients) { nutrient in
                             Text(nutrient.long_name).tag(nutrient)
@@ -44,21 +45,19 @@ struct SettingsView: View {
                         Label("New Goal", systemImage: "plus")
                             .foregroundStyle(.link)
                     }
-                    .onChange(of: s) {
-                        if s != .none {
-                            log.default_goals[s] = 0
-                            s = .none
+                    .onChange(of: selection) {
+                        if selection != .none {
+                            log.default_goals[selection] = 0
+                            selection = .none
                         }
                     }
                 }
             }
             
             Section(header: Text("Daily Meals")) {
-                List {
-                    ForEach(log.default_meals) { meal in
-                        Text(meal.label)
-                    }.reorderable()
-                }.reorderContainer(for: Meal.self, move: move)
+                ForEach($log.default_meals.sorted(by: {$0.sortIndex.wrappedValue < $1.sortIndex.wrappedValue})) { $meal in
+                    TextField(meal.label, text: $meal.label)
+                }
             }
             
             Button("Delete all stored data", systemImage: "trash", role: .destructive) {
@@ -80,10 +79,15 @@ struct SettingsView: View {
         }.toolbar {
             ToolbarItem (placement: .confirmationAction) {
                 Button("Save", role: .confirm) {
-                    log[date].goals = log.default_goals
+                    if log.default_goals != initial_goals {
+                        log[date].goals = log.default_goals
+                    }
+                    if log.default_meals != initial_meals {
+                        log[date].data = log.default_meals.copy()
+                    }
                     log.commit()
                     dismiss()
-                }.disabled(log.default_goals == initial_goals)
+                }.disabled(log.default_goals == initial_goals && log.default_meals == initial_meals)
             }
             ToolbarItem (placement: .cancellationAction) {
                 Button("Cancel", systemImage: "chevron.left", role: .cancel) {
@@ -92,12 +96,15 @@ struct SettingsView: View {
                     dismiss()
                 }
             }
-        }.navigationBarBackButtonHidden()
-            .onAppear {
-                for key in log.default_goals.keys {
-                    initial_goals[key] = Float(log.default_goals[key]!)
-                }
+        }
+        .navigationBarBackButtonHidden()
+        .onAppear {
+            for key in log.default_goals.keys {
+                initial_goals[key] = Float(log.default_goals[key]!)
             }
+            
+            initial_meals = log.default_meals.copy()
+        }
     }
     
     func delete(at offsets: IndexSet) {
@@ -106,12 +113,6 @@ struct SettingsView: View {
             log.default_goals.removeValue(forKey: item)
             log.commit()
         }
-    }
-    
-    
-    
-    func move(_ difference: ReorderDifference<UUID, ReorderableSingleCollectionIdentifier>) {
-        print(difference.sources, difference.destination.position)
     }
 }
 

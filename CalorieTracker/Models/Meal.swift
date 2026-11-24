@@ -66,3 +66,18 @@ class Meal : Identifiable, Codable, CustomStringConvertible, Equatable {
         return lhs.label == rhs.label
     }
 }
+
+extension Array where Element == Meal {
+    func copy() -> Array<Meal> {
+        do {
+            var output: [Meal] = []
+            for e in self {
+                let json = try JSONEncoder().encode(e)
+                output.append(try JSONDecoder().decode(Meal.self, from: json))
+            }
+            return output
+        } catch {
+            fatalError("Error making deep copy: \(error)")
+        }
+    }
+}

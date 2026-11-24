@@ -40,7 +40,6 @@ struct DayHeaderView : View {
                                 if log[oldDate].isEmpty() {
                                     log.data.removeValue(forKey: oldDate)
                                 }
-                                
                                 day = log[newDate]
                             }
                     }

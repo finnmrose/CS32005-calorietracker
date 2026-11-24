@@ -14,11 +14,11 @@ struct MealView : View {
     @Environment(\.modelContext) private var context
     @Environment(Log.self) private var log
     
-    @State var meal: Meal
+    @Binding var meal: Meal
     let date: Date
     
-    init(_ meal: Meal, _ date: Date) {
-        self.meal = meal
+    init(_ meal: Binding<Meal>, _ date: Date) {
+        self._meal = meal
         self.date = date
     }
     

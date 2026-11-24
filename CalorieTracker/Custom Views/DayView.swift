@@ -27,8 +27,8 @@ struct DayView : View {
                     DayHeaderView($day)
                 }
                 
-                ForEach(day.meals) { meal in
-                    MealView(meal, day.date)
+                ForEach($day.data.sorted(by: {$0.sortIndex.wrappedValue < $1.sortIndex.wrappedValue})) { $meal in
+                    MealView($meal, day.date)
                 }
                 
                 NavigationLink {
@@ -40,7 +40,7 @@ struct DayView : View {
                 } label: {
                     Label("Settings", systemImage: "gearshape.fill")
                         .foregroundStyle(.link)
-                }
+                }.navigationLinkIndicatorVisibility(.hidden)
                 
             }
         }
