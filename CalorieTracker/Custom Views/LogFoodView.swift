@@ -53,7 +53,7 @@ struct LogFoodView : View {
                 ForEach(Food.Nutrient.allCases) { item in
                     if food.nutritional_info[item] != nil {
                         HStack {
-                            Text(item.long_name)
+                            Text("\(item.long_name) \(item.alt_unit)")
                             Spacer()
                             Text("\(((food.nutritional_info[item] ?? 0) * (portion_size ?? 0)).formatted(.number.notation(.compactName)))")
                                 .multilineTextAlignment(.trailing)

@@ -63,7 +63,7 @@ struct NewFoodView : View {
             if !newFood.name.isEmpty && !newFood.portion_type.isNone || !ingredients.isEmpty {
                 Section(header: Text("Nutritional Information per \(newFood.portion_type.alt_unit)")) {
                     ForEach(Food.Nutrient.allCases) { nutrient in
-                        FloatField(label: nutrient.long_name, value: $newFood.nutritional_info[nutrient], required: nutrient.required)
+                        FloatField(label: "\(nutrient.long_name) \(nutrient.alt_unit)", value: $newFood.nutritional_info[nutrient], required: nutrient.required)
                     }
                 }
             }
@@ -171,9 +171,11 @@ struct FloatField : View {
     var body : some View {
         HStack {
             Text(label)
+            Spacer()
             TextField(required ? "Required" : "0", value: $value, format: .number.precision(.fractionLength(0...2)))
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.decimalPad)
+                .frame(width:100)
         }
     }
 }

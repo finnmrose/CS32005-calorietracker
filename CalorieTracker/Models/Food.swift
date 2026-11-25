@@ -80,6 +80,17 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
             }
         }
         
+        var alt_unit: String {
+            switch self {
+            case .calories:
+                return "(kcal)"
+            case .carbohydrates, .protein, .fats:
+                return "(g)"
+            default:
+                return ""
+            }
+        }
+        
         static var allCases: AllCases = [.calories, .carbohydrates, .protein, .fats]
     }
     

@@ -34,7 +34,7 @@ struct SettingsView: View {
         Form {
             Section (header: Text("Default Goals")) {
                 ForEach(log.default_goals.keys.sorted(by: {$0.rawValue < $1.rawValue})) { key in
-                    FloatField(label: key.long_name, value: $log.default_goals[key], required: false)
+                    FloatField(label: "\(key.long_name) \(key.alt_unit)", value: $log.default_goals[key], required: false)
                 }.onDelete(perform: delete_goal)
                 
                 if !remaining_nutrients.isEmpty {
