@@ -11,6 +11,8 @@ import Foundation
 
 enum BarcodeAPI {
     
+    static let ENDPOINT = "http://172.20.10.6:10000/"
+    
     static func getData(_ food: Food) async throws -> Food {
         let e = JSONEncoder()
         e.outputFormatting = .prettyPrinted
@@ -21,7 +23,7 @@ enum BarcodeAPI {
     }
     
     static func lookupBarcode(_ query: String) async throws -> Food {
-        let urlString = "http://172.20.10.4:10000/" + query
+        let urlString = BarcodeAPI.ENDPOINT + query
         
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 10
@@ -34,7 +36,7 @@ enum BarcodeAPI {
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Server Error"])
         }
-        try? await Task.sleep(nanoseconds: 2000000000)
+        try? await Task.sleep(nanoseconds: 1000000000)
 
         let info = try JSONDecoder().decode(Food.self, from: data)
         return info

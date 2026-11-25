@@ -97,7 +97,6 @@ struct NewFoodView : View {
                             newFood.ingredients.append(FoodInstance(key, value))
                         }
                     }
-                    
                     context.insert(newFood)
                     try? context.save()
                     dismiss()

@@ -1,0 +1,21 @@
+Create food manually
+Create food from barcode
+Create food from ingredients
+Search ingredients
+Log food
+Log food with weird amount (0.5)
+Search saved foods
+Log food on different day / meal
+Change days
+Delete saved food
+Delete logged food
+Show settings
+Change goal
+Delete goal
+Add goal
+Change meal
+Delete meal
+Add meal
+Delete day's data
+Reset all data
+

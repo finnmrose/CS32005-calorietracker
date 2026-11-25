@@ -15,6 +15,7 @@ struct LogFoodView : View {
     @State private var portion_size: Float? = nil
     @State private var date: Date
     @State private var meal: Meal
+    @State private var update: Bool = false
     
     @Environment(\.modelContext) private var context
     @Environment(Log.self) private var log: Log
@@ -35,11 +36,14 @@ struct LogFoodView : View {
                     } else {
                         self.meal = log[date].meals.first!
                     }
+                    update.toggle()
                 }
             Picker("Meal", selection: $meal) {
                 ForEach(log[date].meals) { m in
                     Text(m.label).tag(m)
                 }
+            }.onChange(of: meal) {
+                update.toggle()
             }
             HStack {
                 Text(food.portion_type.isContinuous ? "Portion Size (\(food.portion_type.unit))" : "No. of Servings")
