@@ -1,11 +1,10 @@
 //
 //  BarcodeAPI.swift
 //  CalorieTracker
+
 //
-//  Created by Rose on 19/11/2026.
-//
-//
-//  modelled after https://medium.com/@codable-kapil/different-ways-of-getting-data-from-an-api-endpoint-in-swift-8b1d5933c9dd
+//  Re-used from Kapil Shivhare's article "Different Ways of Getting Data from an API Endpoint in Swift"
+//  Located at: https://medium.com/@codable-kapil/different-ways-of-getting-data-from-an-api-endpoint-in-swift-8b1d5933c9dd
 //
 
 import Foundation

@@ -2,7 +2,8 @@
 //  DataContainer.swift
 //  CalorieTracker
 //
-//  Created by Rose on 18/11/2026.
+//  Created following "Develop in Swift Tutorial: Collect, model, and store data"
+//  Located at: https://developer.apple.com/tutorials/develop-in-swift/collect-model-and-store-data
 //
 
 import SwiftData

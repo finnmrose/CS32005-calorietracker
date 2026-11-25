@@ -44,7 +44,7 @@ From the beginning, I tried to avoid as much hard-coded information as possible.
 The final version of the app communicates with a simple API for nutritional information lookup, located in \verb|api.py|. In a real production environment, a more complete barcode information API would be used. Unfortunately, most of these APIs do not provide any free access to their information. The app is still making a real API request and a different API endpoint could easily be slotted in for production.
 \section{Testing and Debugging}
 \subsection{Testing Strategy}
-Unfortunately, throughout most of the development I was unaware of Swift and Xcode's comprehensive testing tools. Therefore, most testing was done informally, yet thoroughly.
+Unfortunately, throughout most of the development I was unaware of Swift and Xcode's comprehensive testing tools. Therefore, most testing was done informally, yet thoroughly. Testing usually consisted of simulated user tests with especially tricky flows designed to catch any unexpected behaviour when tasks were done in an uncommon order.
 \subsection{Bug Resolution}
 A bug that caused me frequent headaches was the \verb|Log| object not properly saving any changes to the objects within it. For example, updating a \verb|Meal| object stored within a \verb|Day| object stored within the \verb|Log| would not count as an update to the \verb|Log| object itself. Therefore, SwiftData may fail to detect a need to update its persistent data. I accounted for this using the \verb|update| variable and \verb|Log.commit()| function. \verb|update| has no semantic purpose anywhere in the code, rather, it allows an unobtrusive change to be made using the \verb|Log.commit()| function. When this function is run, a change is made \emph{directly} to the \verb|Log| object. SwiftData then knows to update the object in storage, which includes any changes made to nested objects. 
 \section{Security, Ethics, and Accessibility Considerations}
@@ -58,6 +58,16 @@ Since the app mostly uses system default values, it innately supports many of Ap
 \subsection{Key Challenges}
 Most of the challenge of this module came from having to learn Swift development from scratch. As a modern, industry-standard language, however, there are countless resources for learning the language from official documentation to forum posts and blogs.
 \subsection{Areas for Improvement}
-Currently, users have no way of editing the information of a saved Food. While users can delete and remake Foods easily, this process would be time consuming, especially for a long-time user. As previously mentioned, the current API could be replaced with an actual barcode lookup API.
-
+Currently, users have no way of editing the information of a saved Food. While users can delete and remake Foods easily, this process would be time time-consuming, especially for a long-time user. As previously mentioned, the current API could be replaced with an actual barcode lookup API.
+\section{References}
+The final product contains three sections largely re-used from other authors.
+\begin{itemize}
+	\item \verb|CustomViews/BarcodeScannerView.swift| which is a modified version of the implementation described in Sanjay Nelagadde's article `I Finally Tried Apple VisionKit: Building a Simple Document Scanner in SwiftUI'.
+	Located at: https://levelup.gitconnected.com/i-finally-tried-apple-visionkit-building-a-simple-document-scanner-in-swiftui-c272f0277546
+	\item \verb|Models/DataContainer| which was built largely following the official `Develop in Swift Tutorial: Collect, model, and store data'. This article does not name a specific author.
+	Located at: https://developer.apple.com/tutorials/develop-in-swift/collect-model-and-store-data
+	\item \verb|Models/BarcodeAPI.swift: BarcodeAPI.lookupBarcode()| which was re-used from Kapil Shivhare's article `Different Ways of Getting Data from an API Endpoint in Swift'.
+	Located at:https://medium.com/@codable-kapil/different-ways-of-getting-data-from-an-api-endpoint-in-swift-8b1d5933c9dd|
+\end{itemize} 
+The above files contain comments in their headers crediting the associated author with a direct link to their articles.
 \end{document}  

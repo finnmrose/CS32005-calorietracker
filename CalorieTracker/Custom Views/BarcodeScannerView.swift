@@ -2,9 +2,8 @@
 //  BarcodeScannerView.swift
 //  CalorieTracker
 //
-//  Created by Rose on 19/11/2026.
-//
-//  Adapted from https://levelup.gitconnected.com/i-finally-tried-apple-visionkit-building-a-simple-document-scanner-in-swiftui-c272f0277546
+//  Adapted from Sanjay Nelagadde's article "I Finally Tried Apple VisionKit: Building a Simple Document Scanner in SwiftUI"
+//  Located at: https://levelup.gitconnected.com/i-finally-tried-apple-visionkit-building-a-simple-document-scanner-in-swiftui-c272f0277546
 //
 //
 
