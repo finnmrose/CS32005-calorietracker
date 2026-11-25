@@ -63,6 +63,8 @@ enum Portion: CaseIterable, Identifiable, CustomStringConvertible, Codable {
         }
     }
     
+    
+    
     var isNone: Bool {
         switch self {
         case .none:

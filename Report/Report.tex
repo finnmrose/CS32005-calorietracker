@@ -1,0 +1,63 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+\geometry{height=10in}
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex
+								
+%\usepackage{{Gratzer-Color-Scheme}	% Active to color theorems red and lemmas blue
+	
+\usepackage{amssymb}
+
+%SetFonts
+
+%SetFonts
+\title{CS32005 - Mobile Application Development Report}
+\author{Rose Rose}
+\date{}
+
+\pagestyle{empty}
+
+\usepackage{setspace}
+\singlespacing
+
+\begin{document}
+\maketitle
+\section{Development Process}
+\subsection{Timeline}
+I mostly followed the structure provided in the module material with weeks 1-4 focusing on design and weeks 5-10 focusing on development.
+\subsection{Tools and Technologies}
+This app was built in Swift, Apple's native development language using the official development environment Xcode. It makes use of the following additional technologies:
+\begin{itemize}
+	\item SwiftUI. for building the GUI
+	\item SwiftData, for persistent data storage
+	\item VisionKit, for live data extraction from the device's camera
+	\item Flask, for the example barcode lookup API
+\end{itemize}
+\subsection{Work Structure}
+Throughout development, I used an iterative and incremental development methodology. I chose this style due to my unfamiliarity with most of the technologies I was using. With this method, I was constantly able to use the knowledge gained from creating one feature to improve the design of later features.
+\section{Design and Implementation Decisions}
+\subsection{Key Design Choices}
+From the beginning, I tried to avoid as much hard-coded information as possible. Most views are procedurally built based on enumerators. This allows for easy additions to be made after publishing. For example: All information required to work with nutritional information is built from the Food.Nutrient enumerator. Adding a new nutrient is as easy as adding a new case and filling out each computed value with the desired information. All views throughout the app will immediately support this new nutrient without issue.
+\subsection{Feature Implementation}
+The final version of the app communicates with a simple API for nutritional information lookup, located in \verb|api.py|. In a real production environment, a more complete barcode information API would be used. Unfortunately, most of these APIs do not provide any free access to their information. The app is still making a real API request and a different API endpoint could easily be slotted in for production.
+\section{Testing and Debugging}
+\subsection{Testing Strategy}
+Unfortunately, throughout most of the development I was unaware of Swift and Xcode's comprehensive testing tools. Therefore, most testing was done informally, yet thoroughly.
+\subsection{Bug Resolution}
+A bug that caused me frequent headaches was the \verb|Log| object not properly saving any changes to the objects within it. For example, updating a \verb|Meal| object stored within a \verb|Day| object stored within the \verb|Log| would not count as an update to the \verb|Log| object itself. Therefore, SwiftData may fail to detect a need to update its persistent data. I accounted for this using the \verb|update| variable and \verb|Log.commit()| function. \verb|update| has no semantic purpose anywhere in the code, rather, it allows an unobtrusive change to be made using the \verb|Log.commit()| function. When this function is run, a change is made \emph{directly} to the \verb|Log| object. SwiftData then knows to update the object in storage, which includes any changes made to nested objects. 
+\section{Security, Ethics, and Accessibility Considerations}
+\subsection{Security}
+This app makes use of SwiftData for persistent data storage, which uses AES-256 to encrypt data. I believe this to be sufficient for the level of personal information used by this app. No personal data leaves the device at any point.
+\subsection{Ethics}
+The app complies with Apple least-privilege principles and only uses the camera with the user's permission and provides a usage description where applicable declaring how it uses the device camera. 
+\subsection{Accessibility}
+Since the app mostly uses system default values, it innately supports many of Apple's global accessibility settings like dark mode or bold text. Likewise, the app supports devices of different sizes and orientations without issue.
+\section{Reflection}
+\subsection{Key Challenges}
+Most of the challenge of this module came from having to learn Swift development from scratch. As a modern, industry-standard language, however, there are countless resources for learning the language from official documentation to forum posts and blogs.
+\subsection{Areas for Improvement}
+Currently, users have no way of editing the information of a saved Food. While users can delete and remake Foods easily, this process would be time consuming, especially for a long-time user. As previously mentioned, the current API could be replaced with an actual barcode lookup API.
+
+\end{document}  

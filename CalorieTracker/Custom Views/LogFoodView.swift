@@ -14,23 +14,27 @@ struct LogFoodView : View {
     
     @State private var portion_size: Float? = nil
     @State private var date: Date
-    @Binding private var meal: Meal
+    @State private var meal: Meal
     
     @Environment(\.modelContext) private var context
     @Environment(Log.self) private var log: Log
     @Environment(\.dismiss) private var dismiss
     
-    init(_ food: Food, date: Date = Date(), meal: Binding<Meal>) {
+    init(_ food: Food, date: Date = Date(), meal: Meal) {
         self.food = food
         self.date = date
-        self._meal = meal
+        self.meal = meal
     }
     
     var body : some View {
         Form {
             DatePicker("Date", selection: $date, displayedComponents: [.date])
                 .onChange(of: date) {
-                    self.meal = log[date].meals.first!
+                    if log[date].contains(meal) {
+                        self.meal = log[date][meal]
+                    } else {
+                        self.meal = log[date].meals.first!
+                    }
                 }
             Picker("Meal", selection: $meal) {
                 ForEach(log[date].meals) { m in
@@ -57,6 +61,18 @@ struct LogFoodView : View {
                     }
                 }
             }
+            
+            if !food.ingredients.isEmpty {
+                Section(header: Text("Ingredients")) {
+                    ForEach(food.ingredients) { ingredient in
+                        HStack {
+                            Text(ingredient.name)
+                            Spacer()
+                            Text((ingredient * (portion_size ?? 0)).amount_formatted)
+                        }
+                    }
+                }
+            }
         }
         .navigationTitle("Log \(food.name)")
         .toolbar {
@@ -64,7 +80,7 @@ struct LogFoodView : View {
                 Button("Save", systemImage: "checkmark") {
                     self.meal.foods.append(FoodInstance(food, amount: portion_size ?? 0))
                     food.timestamp = .now
-                    log[date][meal.label] = meal
+                    log[date][meal] = meal
                     log.commit()
                     
                     dismiss()

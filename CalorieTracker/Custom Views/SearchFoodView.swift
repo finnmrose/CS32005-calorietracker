@@ -69,7 +69,7 @@ struct SearchResult: View {
             Stepper {
                 TextField(value: $amount, format: .number) {
                     Text("\((amount ?? 0).formatted(.number))")
-                }
+                }.keyboardType(.decimalPad)
             } onIncrement: {
                 amount = (amount ?? 0) + step_size
             } onDecrement: {

@@ -60,7 +60,7 @@ struct NewFoodView : View {
                 }
             }.disabled(!ingredients.isEmpty)
             
-            if !newFood.name.isEmpty, !newFood.portion_type.isNone {
+            if !newFood.name.isEmpty && !newFood.portion_type.isNone || !ingredients.isEmpty {
                 Section(header: Text("Nutritional Information per \(newFood.portion_type.alt_unit)")) {
                     ForEach(Food.Nutrient.allCases) { nutrient in
                         FloatField(label: nutrient.long_name, value: $newFood.nutritional_info[nutrient], required: nutrient.required)
@@ -92,6 +92,12 @@ struct NewFoodView : View {
                 Button("Save") {
                     newFood.nutritional_info = newFood.nutritional_info.mapValues({$0 / newFood.portion_type.input_scale})
                     
+                    if !ingredients.isEmpty {
+                        for (key, value) in ingredients {
+                            newFood.ingredients.append(FoodInstance(key, value))
+                        }
+                    }
+                    
                     context.insert(newFood)
                     try? context.save()
                     dismiss()
@@ -115,7 +121,7 @@ struct NewFoodView : View {
                         ingredients = [:]
                     } catch {
                         self.foundBarcode = ""
-                        print(error.localizedDescription)
+                        print(error)
                     }
                 }
             } onCancel: {

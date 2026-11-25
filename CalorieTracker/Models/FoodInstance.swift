@@ -70,3 +70,9 @@ struct FoodInstance: Identifiable, Codable, Equatable, CustomStringConvertible {
         FoodInstance(Food.sampleData[3], 200),
     ]
 }
+
+extension FoodInstance {
+    static func * (left: FoodInstance, right: Float) -> FoodInstance {
+        return FoodInstance(left.food, left.amount * right)
+    }
+}

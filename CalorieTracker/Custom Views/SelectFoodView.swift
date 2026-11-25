@@ -35,11 +35,11 @@ struct SelectFoodView: View {
         }.sorted(by: {$0.timestamp > $1.timestamp})
     }
     
-    @Binding var meal: Meal
+    let meal: Meal
     let date: Date
     
-    init (_ meal: Binding<Meal>, _ date: Date) {
-        self._meal = meal
+    init (_ meal: Meal, _ date: Date) {
+        self.meal = meal
         self.date = date
     }
     
@@ -64,7 +64,7 @@ struct SelectFoodView: View {
                         List {
                             ForEach(results.sorted {$0.timestamp > $1.timestamp}) { food in
                                 NavigationLink {
-                                    LogFoodView(food, date: self.date, meal: $meal)
+                                    LogFoodView(food, date: self.date, meal: meal)
                                 } label: {
                                     HStack {
                                         Text(food.name)

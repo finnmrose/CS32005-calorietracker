@@ -109,4 +109,8 @@ class Day: Codable, CustomStringConvertible {
         try container.encode(goals, forKey: .goals)
         try container.encode(data, forKey: .data)
     }
+    
+    func contains(_ meal: Meal) -> Bool {
+        return data.contains(meal)
+    }
 }

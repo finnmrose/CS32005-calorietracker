@@ -14,7 +14,7 @@ import SwiftData
 @Model
 class Log: CustomStringConvertible {
     
-    private var c: Bool = false
+    private var update: Bool = false
     
     var data: [Date: Day]
     // for SOME reason you have to define dictionaries in this super verbose way in this class i dont know why its only here and nowhere else
@@ -48,7 +48,7 @@ class Log: CustomStringConvertible {
     // otherwise when things only modify objects inside Log (and not Log itself)
     // SwiftData fails to detect something has changed and doesn't save the data
     func commit() {
-        c.toggle()
+        update.toggle()
     }
     
     func reset() {

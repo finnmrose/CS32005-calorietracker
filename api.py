@@ -1,24 +1,27 @@
 from flask import Flask
 
 data = {"":"""{
-  "portion" : {
-    "count" : {
-
-    }
-  },
-  "id" : "CAEDBB70-3293-4771-9A23-509348304A55",
-  "name" : "Banana",
-  "timestamp" : 817042782.136986,
   "nutritional_info" : [
-    2,
-    1.3,
     0,
     105,
     1,
     27,
     3,
-    0.39
-  ]
+    0.39,
+    2,
+    1.3
+  ],
+  "ingredients" : [
+
+  ],
+  "portion" : {
+    "count" : {
+
+    }
+  },
+  "timestamp" : 817230249.425937,
+  "name" : "Banana",
+  "id" : "1A7BD0AF-FDC6-48C1-9631-D1C2031BB55B"
 }"""}
 
 

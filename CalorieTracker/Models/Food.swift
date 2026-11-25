@@ -23,7 +23,7 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         case calories = 0
         case carbohydrates = 1
         case protein = 2
-        case fats = 3
+        case fats = 3 
         
         var long_name: String {
             switch self {
@@ -89,6 +89,7 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
     var calories: Float {nutritional_info[.calories] ?? 0}
     
     var nutritional_info: [Food.Nutrient: Float]
+    var ingredients: [FoodInstance] = []
     
     var timestamp: Date
     var deleted: Bool = false
@@ -122,11 +123,12 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         self.timestamp = .now
     }
     
-    init(name: String, portion_type: Portion, nutritional_info: [Food.Nutrient: Float] = [:]) {
+    init(name: String, portion_type: Portion, nutritional_info: [Food.Nutrient: Float] = [:], ingredients: [FoodInstance] = []) {
         self.name = name
         self.portion_type = portion_type
         self.nutritional_info = nutritional_info
         self.timestamp = .now
+        self.ingredients = ingredients
     }
     
     subscript(index: Food.Nutrient) -> Float? {
@@ -152,6 +154,7 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         self.portion_type = try container.decode(Portion.self, forKey: .portion)
         self.nutritional_info = try container.decode(Dictionary<Food.Nutrient, Float>.self, forKey: .nutritional_info)
         self.timestamp = try container.decode(Date.self, forKey: .timestamp)
+        self.ingredients = try container.decode(Array<FoodInstance>.self, forKey: .ingredients)
     }
     
     func encode(to encoder: any Encoder) throws {
@@ -161,5 +164,6 @@ class Food : Identifiable, Codable, Hashable, CustomStringConvertible {
         try container.encode(portion_type, forKey: .portion)
         try container.encode(nutritional_info, forKey: .nutritional_info)
         try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(ingredients, forKey: .ingredients)
     }
 }

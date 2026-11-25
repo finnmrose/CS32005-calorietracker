@@ -23,7 +23,7 @@ struct MealView : View {
     }
     
     var body : some View {
-        Section (header: MealHeaderView(meal: meal)) {
+        Section (header: MealHeaderView(meal: $meal)) {
             ForEach(meal.foods) { food in
                 HStack {
                     Text(food.amount_formatted)
@@ -34,7 +34,7 @@ struct MealView : View {
             }.onDelete(perform: delete)
             
             NavigationLink {
-                SelectFoodView($meal, date)
+                SelectFoodView(meal, date)
             } label: {
                 Label("Log Food", systemImage: "plus")
                     .foregroundStyle(.link)
@@ -51,7 +51,7 @@ struct MealView : View {
 }
 
 struct MealHeaderView : View {
-    let meal : Meal
+    @Binding var meal : Meal
     
     var body : some View {
         HStack {

@@ -11,17 +11,15 @@
 import Foundation
 
 enum BarcodeAPI {
-    /*
-    static func lookupBarcode(_ query: String) async throws -> Food {
+    
+    static func getData(_ food: Food) async throws -> Food {
         let e = JSONEncoder()
         e.outputFormatting = .prettyPrinted
         
-        let d = try e.encode(Food.sampleData[0])
+        let d = try e.encode(food)
         print(String(data: d, encoding: .utf8) ?? "nil")
-        
-        try? await Task.sleep(nanoseconds: 2000000000)
-        return Food.sampleData[0]
-     */
+        return food
+    }
     
     static func lookupBarcode(_ query: String) async throws -> Food {
         let urlString = "http://172.20.10.4:10000/" + query
@@ -38,6 +36,7 @@ enum BarcodeAPI {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Server Error"])
         }
         try? await Task.sleep(nanoseconds: 2000000000)
+
         let info = try JSONDecoder().decode(Food.self, from: data)
         return info
     }
