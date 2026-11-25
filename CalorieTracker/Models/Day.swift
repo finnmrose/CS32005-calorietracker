@@ -14,6 +14,7 @@ class Day: Codable, CustomStringConvertible {
         case date, goals, data
     }
     
+    var update: Bool = false
     var date: Date
     var goals: [Food.Nutrient: Float] = [:]
     var data: [Meal]
@@ -112,5 +113,9 @@ class Day: Codable, CustomStringConvertible {
     
     func contains(_ meal: Meal) -> Bool {
         return data.contains(meal)
+    }
+    
+    func commit() {
+        update.toggle()
     }
 }

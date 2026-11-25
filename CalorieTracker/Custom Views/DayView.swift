@@ -32,9 +32,9 @@ struct DayView : View {
                 }
                 
                 NavigationLink {
-                    SettingsView(date: day.date)
+                    SettingsView(day.date)
                         .onDisappear {
-                            day = log[date]
+                            day = log[day.date]
                             refresh.toggle()
                         }
                 } label: {
@@ -46,6 +46,12 @@ struct DayView : View {
         }
         .onAppear {
             day = log[date]
+        }
+        .onChange(of: day.update) {
+            if day.isEmpty {
+                log.remove(day.date)
+            }
+            day = log[day.date]
         }
     }
 }

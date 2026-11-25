@@ -49,12 +49,19 @@ class Log: CustomStringConvertible {
     // SwiftData fails to detect something has changed and doesn't save the data
     func commit() {
         update.toggle()
+        for (_, value) in data {
+            value.commit()
+        }
     }
     
     func reset() {
         self.data = [:]
         self.default_goals = Dictionary<Food.Nutrient, Float>(uniqueKeysWithValues: [(Food.Nutrient.calories, Float(2000)), (Food.Nutrient.carbohydrates, Float(260)), (Food.Nutrient.protein, Float(100)), (Food.Nutrient.fats, Float(70))])
         self.default_meals = [Meal("Breakfast", sortIndex: 0), Meal("Lunch", sortIndex: 1), Meal("Dinner", sortIndex: 2), Meal("Other", sortIndex: 3)]
+    }
+    
+    func remove(_ index: Date) {
+        self.data.removeValue(forKey: self[index].date)
     }
     
     static let sampleData = Log([.now: Day.sampleData.first!])

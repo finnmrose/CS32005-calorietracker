@@ -23,6 +23,13 @@ struct SettingsView: View {
     @State private var confirm_change: Bool = false
     @State private var confirm_delete: Bool = false
     
+    @State private var removal_day: Date
+    
+    init(_ date: Date) {
+        self.date = date
+        self.removal_day = date
+    }
+    
     var body: some View {
         @Bindable var log = log
         
@@ -66,18 +73,27 @@ struct SettingsView: View {
                 }
             }
             
-            Section(header: Text("Delete Data")) {
+            Section {
                 
-                Button("Delete current day data", role: .destructive) {
-                    confirm_delete = true
+                HStack {
+                    Button("Delete data from", role: .destructive) {
+                        confirm_delete = true
+                    }
+                    Spacer()
+                    DatePicker("Deletion day", selection: $removal_day, displayedComponents: [.date])
+                        .labelsHidden()
                 }
-                .alert("This will delete all data for \(date.formatted(date: .abbreviated, time: .omitted)). Are you sure?", isPresented: $confirm_delete) {
+                .alert("This will delete all data for \(removal_day.formatted(date: .abbreviated, time: .omitted)). Are you sure?", isPresented: $confirm_delete) {
                     Button("Cancel", role: .cancel) {
                         confirm_delete = false
                     }
                     
                     Button("Delete", role: .destructive) {
-                        log.data.removeValue(forKey: date)
+                        
+                        try? dataContainer.context.save()
+                        print(log)
+                        log.remove(removal_day)
+                        print(log)
                         log.commit()
                         dismiss()
                     }
@@ -119,7 +135,7 @@ struct SettingsView: View {
                     }
                 }
                 .disabled(log.default_goals == initial_goals && log.default_meals == initial_meals)
-                .alert("Current day \(date.formatted(date: .abbreviated, time: .omitted)) contains data. Changes will only affect future days.", isPresented: $confirm_change) {
+                .alert("\(date.formatted(date: .abbreviated, time: .omitted)) contains data. Changes will only affect future days.", isPresented: $confirm_change) {
                     Button("Cancel", role: .cancel) {
                         confirm_change = false
                     }
@@ -132,6 +148,7 @@ struct SettingsView: View {
             ToolbarItem (placement: .cancellationAction) {
                 Button("Cancel", systemImage: "chevron.left", role: .cancel) {
                     log.default_goals = initial_goals
+                    log.default_meals = initial_meals
                     log.commit()
                     dismiss()
                 }
@@ -165,7 +182,7 @@ struct SettingsView: View {
 
 #Preview {
     NavigationStack {
-        SettingsView(date: .now)
+        SettingsView(.now)
             .sampleDataContainer()
     }
 }
